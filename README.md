@@ -1,6 +1,6 @@
 # xernerx-commands
 
-## install
+## Install
 
 ```
 npm install xernerx-commands
@@ -16,7 +16,7 @@ new (class Client extends XernerxClient {
 	constructor() {
 		super(discordOptions, clientOptions);
 
-		this.modules.commandHandler.loadAllMessageCommands(MessageCommandOptions);
+		this.modules.commandHandler.loadAllMessageCommands(messageCommandOptions);
 
 		this.loadExtensions({
 			extensions: [new XernerxCommands(this, options)],
@@ -29,8 +29,16 @@ new (class Client extends XernerxClient {
 
 ## Options
 
-| name    | type                            | required | default | description                                                          |
-| ------- | ------------------------------- | -------- | ------- | -------------------------------------------------------------------- |
-| include | Array<string> \| null           | false    | null    | The commands that should be included. (will only load specified)     |
-| exclude | Array<string> \| null           | false    | null    | The commands that should be excluded. (will only load not specified) |
-| prefix  | Array<string> \| string \| null | false    | null    | An extra prefix just for these commands.                             |
+| Name    | Type                            | Default | Required | Description                                                          |
+| ------- | ------------------------------- | ------- | -------- | -------------------------------------------------------------------- |
+| include | Array<string> \| null           | null    | false    | The commands that should be included. (will only load specified)     |
+| exclude | Array<string> \| null           | null    | false    | The commands that should be excluded. (will only load not specified) |
+| prefix  | Array<string> \| string \| null | null    | false    | An extra prefix just for these commands.                             |
+
+## Commands
+
+| Name          | aliases  | Description                                                                  |
+| ------------- | -------- | ---------------------------------------------------------------------------- |
+| evaluate      | eval, ev | An evaluation command to run code snippets without needing to open a file.   |
+| ping          |          | A ping that will provide you with all pings.                                 |
+| documentation | docs     | A command that allows you to get the documentation of Discord.js or Xernerx. |

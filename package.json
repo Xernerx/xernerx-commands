@@ -1,6 +1,6 @@
 {
 	"name": "xernerx-commands",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"description": "An extension for xernerx containing useful commands for developing.",
 	"main": "dist/main.js",
