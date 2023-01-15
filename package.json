@@ -2,14 +2,16 @@
 	"name": "xernerx-commands",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "",
+	"description": "An extension for xernerx containing useful commands for developing.",
 	"main": "dist/main.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"keywords": [
+		"Discord",
+		"Discord.js",
+		"xernerx",
+		"extension"
+	],
+	"author": "Dummi",
+	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^18.11.18"
 	},
