@@ -12,7 +12,8 @@
 	"homepage": "https://thedummi.github.io/xernerx/home.html",
 	"packageManager": "npm@8.5.5",
 	"scripts": {
-		"checks": "npm i && npm fund && npm audit fix --force && tsc -w"
+		"checks": "npm i && npm fund && npm audit fix --force && tsc -w",
+		"patch": "git add . && git commit -m \"Version Patch\" && npm version patch && npm publish"
 	},
 	"bugs": {
 		"url": "https://github.com/TheDummi/xernerx-commands/issues"
