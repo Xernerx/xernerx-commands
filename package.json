@@ -2,20 +2,31 @@
 	"name": "xernerx-commands",
 	"version": "0.0.1",
 	"type": "module",
-	"description": "An extension for xernerx containing useful commands for developing.",
+	"description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
 	"main": "dist/main.js",
 	"keywords": [
-		"Discord",
-		"Discord.js",
-		"xernerx",
-		"extension"
+		"xernerx"
 	],
 	"author": "Dummi",
 	"license": "MIT",
-	"devDependencies": {
-		"@types/node": "^18.11.18"
+	"homepage": "https://thedummi.github.io/xernerx/home.html",
+	"packageManager": "npm@8.5.5",
+	"scripts": {
+		"checks": "npm i && npm fund && npm audit fix --force && tsc -w"
+	},
+	"bugs": {
+		"url": "https://github.com/TheDummi/xernerx-commands/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/TheDummi/xernerx-commands.git"
 	},
 	"dependencies": {
-		"dumfunctions": "^2.0.0"
+		"dumfunctions": "^2.0.0",
+		"got": "^12.5.3"
+	},
+	"devDependencies": {
+		"@types/node": "^18.11.18",
+		"typescript": "^4.9.4"
 	}
 }
