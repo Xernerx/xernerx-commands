@@ -1,6 +1,6 @@
 {
 	"name": "xernerx-commands",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"type": "module",
 	"description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
 	"main": "dist/main.js",
