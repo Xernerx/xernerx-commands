@@ -1,6 +1,6 @@
 {
 	"name": "xernerx-commands",
-	"version": "0.1.0",
+	"version": "0.0.2",
 	"type": "module",
 	"description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
 	"main": "dist/main.js",
@@ -13,7 +13,9 @@
 	"packageManager": "npm@8.5.5",
 	"scripts": {
 		"checks": "npm i && npm fund && npm audit fix --force && tsc -w",
-		"patch": "git add . && git commit -m \"Version Patch\" && npm version patch && npm publish"
+		"patch": "git add . && git commit -m \"Version Patch\" && npm version patch && npm publish",
+		"minor": "git add . && git commit -m \"Version Upgrade\" && npm version minor && npm publish",
+		"major": "git add . && git commit -m \"Version Rewrite\" && npm version major && npm publish"
 	},
 	"bugs": {
 		"url": "https://github.com/TheDummi/xernerx-commands/issues"
