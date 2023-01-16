@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import path from "node:path"
 import { Style } from "dumfunctions";
+import pkg from "../package.js";
 
 class XernerxCommands {
     client: Client;
@@ -85,4 +86,6 @@ interface HandlerOptions {
     XernerxCommands: Options;
 }
 
-export { XernerxCommands }
+const version = pkg.version;
+
+export { XernerxCommands, version }

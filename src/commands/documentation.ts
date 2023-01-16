@@ -13,7 +13,7 @@ export default class DocumentationCommand {
 
         this.name = "documentation";
 
-        this.aliases = [];
+        this.aliases = ["docs"];
 
         this.owner = true;
 
@@ -25,5 +25,6 @@ export default class DocumentationCommand {
     }
 
     async exec(message: any) {
+        message.util.reply('Soon:tm:')
     }
 }

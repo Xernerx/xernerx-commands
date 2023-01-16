@@ -26,7 +26,8 @@
 	},
 	"dependencies": {
 		"dumfunctions": "^2.0.0",
-		"got": "^12.5.3"
+		"got": "^12.5.3",
+		"xernerx": "^3.2.4"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.18",
