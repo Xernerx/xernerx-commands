@@ -1,30 +1,29 @@
-export default class DocumentationCommand {
-    id: string;
-    name: string;
-    owner: boolean;
-    description: string;
-    category: string;
-    prefix: Array<string>;
-    args: unknown;
-    aliases: Array<string>;
+import { MessageCommand } from 'xernerx';
 
-    constructor() {
-        this.id = "documentation";
+export default class DocumentationCommand extends MessageCommand {
+	constructor() {
+		super('documentation', {
+			name: 'documentation',
+			aliases: ['docs'],
+			owner: true,
+			description: 'A command to read the documentation of Discord.js or xernerx.',
+			category: 'XernerxCommand',
+			prefix: [],
+			args: [
+				{
+					name: 'option',
+					type: 'option',
+					content: ['x', 'xernerx', 'djs', 'discord.js'],
+				},
+				{
+					name: 'rest',
+					type: 'rest',
+				},
+			],
+		});
+	}
 
-        this.name = "documentation";
-
-        this.aliases = ["docs"];
-
-        this.owner = true;
-
-        this.description = "A command to read the documentation of Discord.js or xernerx.";
-
-        this.category = "XernerxCommand";
-
-        this.prefix = [];
-    }
-
-    async exec(message: any) {
-        message.util.reply('Soon:tm:')
-    }
+	async exec(message: any, args: any) {
+		message.util.reply('Soon:tm:');
+	}
 }
