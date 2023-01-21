@@ -1,4 +1,4 @@
-import { MessageCommand, version, Discord } from 'xernerx';
+import { MessageCommandBuilder, version, Discord } from 'xernerx';
 import got from 'got';
 
 import { inspect, promisify } from 'node:util';
@@ -9,7 +9,7 @@ import { version as XCVersion } from '../main.js';
 
 const shell = promisify(exec);
 
-export default class EvaluateCommand extends MessageCommand {
+export default class EvaluateCommand extends MessageCommandBuilder {
 	constructor() {
 		super('evaluate', {
 			name: 'evaluate',

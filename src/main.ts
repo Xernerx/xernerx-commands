@@ -1,8 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
-import { Style } from 'dumfunctions';
 import pkg from '../package.js';
-import XernerxExtensionBuilder from 'xernerx-extension-builder';
+import { ExtensionBuilder as XernerxExtensionBuilder, DumFunctions } from 'xernerx';
 
 class XernerxCommands extends XernerxExtensionBuilder {
 	client: Client;
@@ -20,13 +19,13 @@ class XernerxCommands extends XernerxExtensionBuilder {
 		};
 
 		if (!this.client.handlerOptions.message) {
-			console.error(Style.log(`Xernerx | Commands | To use this extension you require to setup the message command handler!`, { color: Style.BackgroundColor.Red }));
+			console.error(DumFunctions.Style.log(`Xernerx | Commands | To use this extension you require to setup the message command handler!`, { color: DumFunctions.Style.BackgroundColor.Red }));
 
 			return;
 		}
 
 		if (!(this.client.options.intents as Record<'has', Function>).has('GuildMessages')) {
-			console.error(Style.log(`Xernerx | Commands | To use this extension you require the intent 'GuildMessages'!`, { color: Style.BackgroundColor.Red }));
+			console.error(DumFunctions.Style.log(`Xernerx | Commands | To use this extension you require the intent 'GuildMessages'!`, { color: DumFunctions.Style.BackgroundColor.Red }));
 
 			return;
 		}
