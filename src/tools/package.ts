@@ -1,6 +1,6 @@
 export default {
 	"name": "xernerx-commands",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"type": "module",
 	"description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
 	"main": "dist/main.js",
@@ -14,9 +14,9 @@ export default {
 	"scripts": {
 		"start": "npm i && npm fund && npm audit fix --force && npm link && tsc -w",
 		"build": "node ../../.scripts/rewritePackage.js",
-		"patch": " npm run build && git add . && npm run commit && npm version patch && npm publish && git push",
-		"minor": " npm run build && git add . && npm run commit && npm version minor && npm publish && git push",
-		"major": " npm run build && git add . && npm run commit && npm version major && npm publish && git push",
+		"patch": " npm run build && tsc && git add . && npm run commit && npm version patch && npm publish && git push",
+		"minor": " npm run build && tsc && git add . && npm run commit && npm version minor && npm publish && git push",
+		"major": " npm run build && tsc && git add . && npm run commit && npm version major && npm publish && git push",
 		"commit": "node ../../.scripts/commit.js"
 	},
 	"bugs": {
