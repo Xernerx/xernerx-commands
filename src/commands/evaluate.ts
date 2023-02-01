@@ -1,4 +1,4 @@
-import { MessageCommandBuilder, version, Discord } from 'xernerx';
+import { MessageCommandBuilder, version, xernerxVersion } from 'xernerx';
 import got from 'got';
 
 import { inspect, promisify } from 'node:util';
@@ -9,13 +9,16 @@ import { version as XCVersion } from '../main.js';
 
 const shell = promisify(exec);
 
+console.log(version, xernerxVersion);
+
 export default class EvaluateCommand extends MessageCommandBuilder {
 	constructor() {
 		super('evaluate', {
 			name: 'evaluate',
 			aliases: ['eval', 'ev'],
 			owner: true,
-			description: 'A command that has a multifunctional use for evaluating, shell command, sourcing and git. (JavaScript take on the famous Python extension Jishaku)',
+			description:
+				'A command that has a multifunctional use for evaluating, shell command, sourcing and git. (JavaScript take on the famous Python extension Jishaku)',
 			info: "Run the command to see it's options.",
 			category: 'XernerxCommand',
 			prefix: [],
@@ -38,18 +41,27 @@ export default class EvaluateCommand extends MessageCommandBuilder {
 			await message.channel.sendTyping();
 			const guilds = await message.client.guilds.fetch(),
 				userCount =
-					((await Promise.all(guilds.map(async (guild: Record<'fetch', Function>) => (await guild.fetch())?.memberCount))) as Record<'reduce', Function>)?.reduce((a: number, b: number) => (a += b)) ||
-					message.client.users.cache.size,
+					(
+						(await Promise.all(
+							guilds.map(async (guild: Record<'fetch', Function>) => (await guild.fetch())?.memberCount)
+						)) as Record<'reduce', Function>
+					)?.reduce((a: number, b: number) => (a += b)) || message.client.users.cache.size,
 				hasIntent = (intent: string) => (message.client.options.intents.has(intent) ? 'enabled' : 'disabled');
 
 			return await message.util.reply(
-				`XernerxCommands \`v${XCVersion}\`, Xernerx \`v${version}\`, Discord.js \`v${Discord.version}\`, \`Node ${process.version}\` on \`${process.platform}\`.\nModules were loaded <t:${Math.round(
+				`XernerxCommands \`v${XCVersion}\`, Xernerx \`v${xernerxVersion}\`, Discord.js \`v${version}\`, \`Node ${
+					process.version
+				}\` on \`${process.platform}\`.\nModules were loaded <t:${Math.round(
 					message.client.readyTimestamp / 1000
 				)}:R>, handlers were loaded <t:${Math.round(message.client.readyTimestamp / 1000)}:R>\n\nThis bot is ${
-					!message.client.shard ? 'not sharded' : `on ${message.client.shardCount} shard${message.client.shardCount > 1 ? 's' : ''}`
-				} and can see ${guilds.size} guild${guilds.size > 1 ? 's' : ''} and ${userCount} user${userCount > 1 ? 's' : ''}.\nMessage cache capped at ${
-					message.channel.messages.cache.maxSize
-				}, presences intent is ${hasIntent('GuildPresences')}, members intent is ${hasIntent('GuildMembers')}, and message content intent is ${hasIntent(
+					!message.client.shard
+						? 'not sharded'
+						: `on ${message.client.shardCount} shard${message.client.shardCount > 1 ? 's' : ''}`
+				} and can see ${guilds.size} guild${guilds.size > 1 ? 's' : ''} and ${userCount} user${
+					userCount > 1 ? 's' : ''
+				}.\nMessage cache capped at ${message.channel.messages.cache.maxSize}, presences intent is ${hasIntent(
+					'GuildPresences'
+				)}, members intent is ${hasIntent('GuildMembers')}, and message content intent is ${hasIntent(
 					'MessageContent'
 				)}.\nAverage websocket latency: ${message.client.ws.ping}ms.`
 			);
@@ -141,7 +153,12 @@ export default class EvaluateCommand extends MessageCommandBuilder {
 	}
 
 	async #haste(code: string) {
-		const hasteURLs = ['https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech'];
+		const hasteURLs = [
+			'https://hst.sh',
+			'https://hastebin.com',
+			'https://haste.clicksminuteper.net',
+			'https://haste.tyman.tech',
+		];
 
 		for (const url of hasteURLs) {
 			try {
@@ -164,7 +181,8 @@ export default class EvaluateCommand extends MessageCommandBuilder {
 
 		const haste = await this.#haste(content);
 
-		if (content.length > 1950) return await message.util.reply(`Code is over 2000 characters, you can view it in browser here: ${haste}.`);
+		if (content.length > 1950)
+			return await message.util.reply(`Code is over 2000 characters, you can view it in browser here: ${haste}.`);
 		else return await message.util.reply('```js\n' + content + '\n```' + `\nView in browser: ${haste}`);
 	}
 }

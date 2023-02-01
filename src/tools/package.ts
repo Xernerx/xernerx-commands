@@ -1,6 +1,6 @@
-{
+export default {
 	"name": "xernerx-commands",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"type": "module",
 	"description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
 	"main": "dist/main.js",
