@@ -1,5 +1,4 @@
 import { MessageCommandBuilder, version, xernerxVersion } from 'xernerx';
-import got from 'got';
 
 import { inspect, promisify } from 'util';
 import * as fs from 'fs';
@@ -68,7 +67,7 @@ export default class EvaluateCommand extends MessageCommandBuilder {
 
                 return this.#reply(message, response as string);
             } catch (error) {
-                return this.#reply(message, error as string);
+                return this.#reply(message, inspect(error));
             }
         }
 
@@ -146,21 +145,24 @@ export default class EvaluateCommand extends MessageCommandBuilder {
 
         for (const url of hasteURLs) {
             try {
-                const resp: any = await got
-                    .post(url + '/documents', {
+                const resp = await (
+                    await fetch(url + '/documents', {
                         body: code,
+                        method: 'POST',
                     })
-                    .json();
+                ).json();
                 return `${url}/${resp.key}`;
             } catch (e) {
                 console.error(e);
                 continue;
             }
         }
-        throw new Error('Haste failure');
+        return `Can't haste code anywhere.`;
     }
 
     async #reply(message: any, content: string) {
+        if (typeof content !== 'string') content = inspect(content);
+
         content = content.replaceAll(message.client.token, 'Token has been hidden.');
 
         const haste = await this.#haste(content);

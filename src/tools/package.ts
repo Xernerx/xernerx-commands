@@ -1,6 +1,6 @@
 export default {
     "name": "xernerx-commands",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "type": "module",
     "description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
     "main": "dist/main.js",
@@ -36,7 +36,6 @@ export default {
         "url": "git+https://github.com/TheDummi/xernerx-commands.git"
     },
     "dependencies": {
-        "got": "^12.5.3",
         "xernerx": "^3.3.5"
     },
     "devDependencies": {
