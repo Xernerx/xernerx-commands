@@ -6,6 +6,8 @@
 npm install xernerx-commands
 ```
 
+ee
+
 ## Setup
 
 ```js
