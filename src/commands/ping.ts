@@ -4,7 +4,9 @@ export default class PingCommand extends MessageCommandBuilder {
     constructor() {
         super('ping', {
             name: 'ping',
-            owner: true,
+            strict: {
+                owner: true,
+            },
             description: 'A ping command that keeps track of all pings.',
             category: 'XernerxCommand',
             args: [],

@@ -13,7 +13,9 @@ export default class EvaluateCommand extends MessageCommandBuilder {
         super('evaluate', {
             name: 'evaluate',
             aliases: ['eval', 'ev'],
-            owner: true,
+            strict: {
+                owner: true,
+            },
             description: 'A command that has a multifunctional use for evaluating, shell command, sourcing and git. (JavaScript take on the famous Python extension Jishaku)',
             info: "Run the command to see it's options.",
             category: 'XernerxCommand',

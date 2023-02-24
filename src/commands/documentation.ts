@@ -5,7 +5,9 @@ export default class DocumentationCommand extends MessageCommandBuilder {
         super('documentation', {
             name: 'documentation',
             aliases: ['docs'],
-            owner: true,
+            strict: {
+                owner: true,
+            },
             description: 'A command to read the documentation of Discord.js or xernerx.',
             category: 'XernerxCommand',
             prefix: [],
