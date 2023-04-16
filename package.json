@@ -26,7 +26,7 @@
         "site": "git add docs && npm run commit && git push",
         "commit": "node ../../.scripts/commit.js",
         "write": "npm run build && node ../../.scripts/rewritePackage.js ",
-        "build": "tsc && npx tsup src/main.ts && npx prettier --write src"
+        "build": "tsc && npx prettier --write src"
     },
     "bugs": {
         "url": "https://github.com/TheDummi/xernerx-commands/issues"
@@ -36,12 +36,11 @@
         "url": "git+https://github.com/TheDummi/xernerx-commands.git"
     },
     "dependencies": {
-        "xernerx": "^3.3.5"
+        "xernerx": "^4.0.5"
     },
     "devDependencies": {
         "@types/node": "^18.11.18",
         "prettier": "^2.8.4",
-        "tsup": "^6.6.3",
-        "typescript": "^4.9.4"
+        "typescript": "^5.0.4"
     }
 }

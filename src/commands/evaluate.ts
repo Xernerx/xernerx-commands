@@ -1,12 +1,13 @@
-import { MessageCommandBuilder, version, xernerxVersion } from 'xernerx';
+import { MessageCommandBuilder, version, Discord } from 'xernerx';
 
-import { inspect, promisify } from 'util';
-import * as fs from 'fs';
+import { promisify } from 'util';
 import { exec } from 'child_process';
 
 import { version as XCVersion } from '../main.js';
-
-const shell = promisify(exec);
+import ev from '../models/eval.js';
+import haste from '../models/haste.js';
+import sh from '../models/shell.js';
+import source from '../models/source.js';
 
 export default class EvaluateCommand extends MessageCommandBuilder {
     constructor() {
@@ -24,7 +25,7 @@ export default class EvaluateCommand extends MessageCommandBuilder {
                 {
                     type: 'option',
                     name: 'option',
-                    content: ['js', 'sh', 'src', 'haste'],
+                    match: ['js', 'sh', 'src', 'haste'],
                 },
                 {
                     type: 'rest',
@@ -34,10 +35,12 @@ export default class EvaluateCommand extends MessageCommandBuilder {
         });
     }
 
-    async exec(message: any, args: any) {
+    async exec(message: any, a: any) {
+        const args = a.args;
+
         if (!args.option) {
             await message.channel.sendTyping();
-            const guilds = await message.client.guilds.fetch(),
+            const guilds = await message.client.guilds.cache,
                 userCount =
                     ((await Promise.all(guilds.map(async (guild: Record<'fetch', Function>) => (await guild.fetch())?.memberCount))) as Record<'reduce', Function>)?.reduce(
                         (a: number, b: number) => (a += b)
@@ -45,7 +48,7 @@ export default class EvaluateCommand extends MessageCommandBuilder {
                 hasIntent = (intent: string) => (message.client.options.intents.has(intent) ? 'enabled' : 'disabled');
 
             return await message.util.reply(
-                `XernerxCommands \`v${XCVersion}\`, Xernerx \`v${xernerxVersion}\`, Discord.js \`v${version}\`, \`Node ${process.version}\` on \`${
+                `XernerxCommands \`v${XCVersion}\`, Xernerx \`v${version}\`, Discord.js \`v${Discord.version}\`, \`Node ${process.version}\` on \`${
                     process.platform
                 }\`.\nModules were loaded <t:${Math.round(message.client.readyTimestamp / 1000)}:R>, handlers were loaded <t:${Math.round(message.client.readyTimestamp / 1000)}:R>\n\nThis bot is ${
                     !message.client.shard ? 'not sharded' : `on ${message.client.shardCount} shard${message.client.shardCount > 1 ? 's' : ''}`
@@ -57,119 +60,12 @@ export default class EvaluateCommand extends MessageCommandBuilder {
             );
         }
 
-        if (args.option === 'js') {
-            try {
-                let response;
+        if (args.option === 'js') return ev(message, args);
 
-                args.code = args.code?.replace(/```\w*\n|```/gi, '');
+        if (args.option === 'haste') return haste(message, args);
 
-                if (args.option === 'js') response = inspect(await eval(`(async () => { ${args.code} })()`));
+        if (args.option === 'sh') return sh(message, args);
 
-                if (!args.code) response = "'No code to be evaluated!'";
-
-                return this.#reply(message, response as string);
-            } catch (error) {
-                return this.#reply(message, inspect(error));
-            }
-        }
-
-        if (args.option === 'haste') {
-            try {
-                const curDir = fs.readdirSync(`./${args.code || ''}`);
-                const curPath = fs.realpathSync(`./${args.code || ''}`);
-
-                if (Array.isArray(curDir)) {
-                    return this.#reply(
-                        message,
-                        `Your current location.\n\`${curPath}\`\n${curDir
-                            .map((dir, i) => {
-                                let type = '';
-
-                                i + 1 == curDir.length ? (type += '└─ ') : (type += '├─ ');
-
-                                try {
-                                    fs.readdirSync(`${curPath}/${dir}`);
-
-                                    type += '📁';
-                                } catch {
-                                    type += '📄';
-                                }
-
-                                return `${type} \`${dir}\``;
-                            })
-                            .join('\n')}`
-                    );
-                }
-            } catch {
-                try {
-                    const src = fs.readFileSync(`./${args.code || ''}`, { encoding: 'utf-8' });
-
-                    return this.#reply(message, src);
-                } catch {
-                    const curPath = fs.realpathSync(`./${args.code || ''}`);
-
-                    return this.#reply(message, `\`${curPath}\` is not a valid path.`);
-                }
-            }
-        }
-
-        if (args.option === 'sh') {
-            let response;
-
-            try {
-                response = await shell(args.code);
-            } catch (error) {
-                response = error;
-            }
-
-            return this.#reply(message, inspect(response));
-        }
-
-        if (args.option === 'src') {
-            let response;
-
-            try {
-                response = await eval(args.code);
-
-                if (typeof response == 'object') response = inspect(response);
-
-                response = response.toString();
-            } catch {
-                response = 'Variable not found!';
-            }
-
-            return this.#reply(message, response.replace(/"|'/gi, ''));
-        }
-    }
-
-    async #haste(code: string) {
-        const hasteURLs = ['https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech'];
-
-        for (const url of hasteURLs) {
-            try {
-                const resp = await (
-                    await fetch(url + '/documents', {
-                        body: code,
-                        method: 'POST',
-                    })
-                ).json();
-                return `${url}/${resp.key}`;
-            } catch (e) {
-                console.error(e);
-                continue;
-            }
-        }
-        return `Can't haste code anywhere.`;
-    }
-
-    async #reply(message: any, content: string) {
-        if (typeof content !== 'string') content = inspect(content);
-
-        content = content.replaceAll(message.client.token, 'Token has been hidden.');
-
-        const haste = await this.#haste(content);
-
-        if (content.length > 1950) return await message.util.reply(`Code is over 2000 characters, you can view it in browser here: ${haste}.`);
-        else return await message.util.reply('```js\n' + content + '\n```' + `\nView in browser: ${haste}`);
+        if (args.option === 'src') return source(message, args);
     }
 }
