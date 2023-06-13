@@ -36,7 +36,7 @@
         "url": "git+https://github.com/TheDummi/xernerx-commands.git"
     },
     "dependencies": {
-        "xernerx": "^4.0.5"
+        "xernerx": "^4.3.1"
     },
     "devDependencies": {
         "@types/node": "^18.11.18",

@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
-import XernerxClient, { ExtensionBuilder as XernerxExtensionBuilder } from 'xernerx';
+import XernerxClient, { ExtensionBuilder as XernerxExtensionBuilder, Options as DiscordOptions } from 'xernerx';
 
 export default class XernerxCommands extends XernerxExtensionBuilder {
     public readonly client;
@@ -19,6 +19,8 @@ export default class XernerxCommands extends XernerxExtensionBuilder {
     }
 
     async main(client: XernerxClient) {
+        this.client.options.makeCache = DiscordOptions.cacheWithLimits({MessageManager: 1000})
+
         const dir = path.resolve('./node_modules/xernerx-commands/dist/commands');
         const files = fs.readdirSync(dir).filter((file) => file.endsWith('.js'));
 
