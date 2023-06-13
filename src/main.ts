@@ -19,7 +19,7 @@ export default class XernerxCommands extends XernerxExtensionBuilder {
     }
 
     async main(client: XernerxClient) {
-        this.client.options.makeCache = DiscordOptions.cacheWithLimits({MessageManager: 1000})
+        this.client.options.makeCache = DiscordOptions.cacheWithLimits({ MessageManager: 1000 });
 
         const dir = path.resolve('./node_modules/xernerx-commands/dist/commands');
         const files = fs.readdirSync(dir).filter((file) => file.endsWith('.js'));
@@ -61,9 +61,9 @@ export default class XernerxCommands extends XernerxExtensionBuilder {
 type Command = 'documentation' | 'evaluate' | 'ping' | 'transpile';
 
 interface Options {
-    include: Array<Command> | null; // An array with command names to include.
-    exclude: Array<Command> | null; // An array with command names to exclude.
-    prefix: string | Array<string> | null; // An array of strings for prefixes to listen to.
+    include?: Array<Command> | null; // An array with command names to include.
+    exclude?: Array<Command> | null; // An array with command names to exclude.
+    prefix?: string | Array<string> | null; // An array of strings for prefixes to listen to.
 }
 
 const version = '0.0.15';
