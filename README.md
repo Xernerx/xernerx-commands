@@ -15,17 +15,17 @@ import { XernerxCommands } from 'xernerx-commands';
 import XernerxClient from 'xernerx';
 
 new (class Client extends XernerxClient {
-	constructor() {
-		super(discordOptions, clientOptions);
+    constructor() {
+        super(discordOptions, clientOptions);
 
-		this.modules.commandHandler.loadAllMessageCommands(messageCommandOptions);
+        this.modules.commandHandler.loadMessageCommands(messageCommandOptions);
 
-		this.loadExtensions({
-			extensions: [new XernerxCommands(this, options)],
-		});
+        this.modules.extensionHandler.loadExtensions({
+            extensions: [new XernerxCommands(this, options)],
+        });
 
-		this.login('token');
-	}
+        this.login('token');
+    }
 })();
 ```
 
