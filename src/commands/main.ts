@@ -3,8 +3,8 @@ import { version as XCVersion } from '../main.js';
 
 export default class MainCommand extends XernerxMessageCommand {
     constructor() {
-        super('main', {
-            name: 'main',
+        super('xc!', {
+            name: 'xc!',
             regex: new RegExp(`^xc!\\B`, 'gim'),
             strict: {
                 owner: true,
@@ -15,8 +15,6 @@ export default class MainCommand extends XernerxMessageCommand {
     }
 
     async exec(message: any) {
-        await message.channel.sendTyping();
-
         const guilds = await message.client.guilds.cache,
             userCount =
                 ((await Promise.all(guilds.map(async (guild: Record<'fetch', Function>) => (await guild.fetch())?.memberCount))) as Record<'reduce', Function>)?.reduce(
