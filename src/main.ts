@@ -1,8 +1,12 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
-import XernerxClient, { ExtensionBuilder as XernerxExtensionBuilder, Options as DiscordOptions } from 'xernerx';
+import XernerxClient, { XernerxExtension, Options as DiscordOptions, XernerxLog } from 'xernerx';
 
-export default class XernerxCommands extends XernerxExtensionBuilder {
+const version = JSON.parse(fs.readFileSync('./node_modules/xernerx-commands/package.json', 'utf-8')).version;
+
+new XernerxLog(true).update(version, 'https://raw.githubusercontent.com/xernerx/xernerx-commands/main/package.json');
+
+export default class XernerxCommands extends XernerxExtension {
     public readonly client;
     public readonly options;
 
@@ -15,11 +19,14 @@ export default class XernerxCommands extends XernerxExtensionBuilder {
             prefix: options?.prefix || null,
             include: options?.include || null,
             exclude: options?.exclude || null,
+            cache: {
+                messages: options?.cache?.messages || 1000,
+            },
         };
     }
 
     async main(client: XernerxClient) {
-        this.client.options.makeCache = DiscordOptions.cacheWithLimits({ MessageManager: 1000 });
+        this.client.options.makeCache = DiscordOptions.cacheWithLimits({ MessageManager: this.options.cache.messages });
 
         const dir = path.resolve('./node_modules/xernerx-commands/dist/commands');
         const files = fs.readdirSync(dir).filter((file) => file.endsWith('.js'));
@@ -64,8 +71,9 @@ interface Options {
     include?: Array<Command> | null; // An array with command names to include.
     exclude?: Array<Command> | null; // An array with command names to exclude.
     prefix?: string | Array<string> | null; // An array of strings for prefixes to listen to.
+    cache?: {
+        messages?: number;
+    };
 }
-
-const version = '0.0.15';
 
 export { version };

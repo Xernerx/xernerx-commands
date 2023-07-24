@@ -1,12 +1,12 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { MessageCommandBuilder, MessagePayload } from 'xernerx';
+import { XernerxMessageCommand, MessagePayload } from 'xernerx';
 import { XernerxMessage } from 'xernerx/dist/types/extenders.js';
 import { MessageCommandArguments } from 'xernerx/dist/types/interfaces.js';
 
 const shell = promisify(exec);
 
-export default class TranspileCommand extends MessageCommandBuilder {
+export default class TranspileCommand extends XernerxMessageCommand {
     constructor() {
         super('transpile', {
             name: 'transpile',
