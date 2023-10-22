@@ -19,14 +19,16 @@
         "default": null
     },
     "scripts": {
-        "start": "npm i && npm audit fix --force && npm fund && npm link && tsc -w",
-        "patch": "npm run write && git add . && npm run commit && npm version patch && npm publish && git push",
-        "minor": "npm run write && git add . && npm run commit && npm version minor && npm publish && git push",
-        "major": "npm run write && git add . && npm run commit && npm version major && npm publish && git push",
+        "start": "npm i && npm fund && npm audit fix --force && npm link && tsc -w",
+        "commit": "npm run write && git add . && node ./.github/scripts/message.js",
+        "tag": "node ./.github/scripts/tag.js",
+        "patch": "npm run commit && npm version patch && npm run tag && npm publish && git push",
+        "minor": "npm run commit && npm version minor && npm run tag && npm publish && git push",
+        "major": "npm run commit && npm version major && npm run tag && npm publish && git push",
         "site": "git add docs && npm run commit && git push",
-        "commit": "node ../../.scripts/commit.js",
-        "write": "npm run build && node ../../.scripts/rewritePackage.js ",
-        "build": "tsc && npx prettier --write src"
+        "write": "npm i && npm run build && npm run format",
+        "format": "npx prettier --write src dist",
+        "build": "tsc && npm run format"
     },
     "bugs": {
         "url": "https://github.com/TheDummi/xernerx-commands/issues"

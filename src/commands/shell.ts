@@ -9,6 +9,9 @@ export default class XernerxCommandsShellCommand extends XernerxMessageCommand {
         super('shell', {
             name: 'shell',
             aliases: ['sh'],
+            strict: {
+                owner: true,
+            },
             args: [
                 {
                     type: 'rest',

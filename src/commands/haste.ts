@@ -5,6 +5,9 @@ export default class XernerxCommandsHasteCommand extends XernerxMessageCommand {
     constructor() {
         super('haste', {
             name: 'haste',
+            strict: {
+                owner: true,
+            },
             args: [
                 {
                     type: 'rest',
