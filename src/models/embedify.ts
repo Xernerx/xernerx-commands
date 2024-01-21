@@ -14,7 +14,7 @@ export default async function embedify(message: XernerxMessage, content: string,
 
     if (inspect(content).length > 1950) {
         return await message.util.reply({ content: `Code is too big to display in discord. View in browser instead.`, components: [row as never], embeds: [] });
-    } else if (message.guild?.members?.me?.permissions.has('EmbedLinks') && options.useEmbeds) {
+    } else if (message.guild?.members?.me?.permissions.has('EmbedLinks') && (options.useEmbeds ?? true)) {
         const embed = new EmbedBuilder()
             .setColor(success ? 'Purple' : 'Red')
             .setTitle(type)
