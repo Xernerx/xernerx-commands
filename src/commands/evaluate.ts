@@ -1,6 +1,7 @@
 import { inspect } from 'util';
-import { XernerxMessageCommand, Discord } from 'xernerx';
+import { XernerxMessageCommand, XernerxMessage, MessageCommandArguments } from 'xernerx';
 import haste from '../models/haste.js';
+import embedify from '../models/embedify.js';
 
 export default class EvaluateCommand extends XernerxMessageCommand {
     constructor() {
@@ -28,8 +29,8 @@ export default class EvaluateCommand extends XernerxMessageCommand {
         });
     }
 
-    async exec(message: any, { args }: any) {
-        if (!args.option) return await message.util.reply({ content: `Type a language, supported: ${(this.args?.at(0)?.match as Array<string>)?.join(', ')}` });
+    async exec(message: XernerxMessage, { args }: MessageCommandArguments) {
+        if (!args?.option) return await message.util.reply({ content: `Type a language, supported: ${(this.args?.at(0)?.match as Array<string>)?.join(', ')}` });
 
         try {
             const user = message.user,
@@ -40,17 +41,17 @@ export default class EvaluateCommand extends XernerxMessageCommand {
 
             let response;
 
-            args.code = args.code?.replace(/```\w*\n|```/gi, '');
+            if (!args?.code) return await message.util.reply({ content: 'No code was given to evaluate.' });
+
+            args.code = (args?.code as string)?.replace(/```\w*\n|```/gi, '');
 
             if (args.option === 'js') response = await eval(`(async () => { ${args.code} })()`);
 
             if (!args.code) response = "'No code to be evaluated!'";
 
-            if (inspect(response).length >= 2000)
-                return await message.util.reply({ content: `Response is too big to view in discord, you can view it here instead: <${await haste(inspect(response))}>` });
-            else return await message.util.reply({ content: `\`\`\`${args.option}\n${inspect(response)}\`\`\`` });
+            return await embedify(message, `\`\`\`${args.option}\n${inspect(response)}\`\`\``, 'Evaluate', true);
         } catch (error) {
-            return await message.util.reply({ content: `\`\`\`${args.option}\n${inspect(error)}\`\`\`` });
+            return await embedify(message, `\`\`\`${args.option}\n${inspect(error)}\`\`\``, 'Evaluate', false);
         }
     }
 }

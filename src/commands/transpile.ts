@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import { XernerxMessageCommand, MessagePayload } from 'xernerx';
 import { XernerxMessage } from 'xernerx/dist/types/extenders.js';
 import { MessageCommandArguments } from 'xernerx/dist/types/interfaces.js';
+import embedify from '../models/embedify.js';
 
 const shell = promisify(exec);
 
@@ -42,6 +43,6 @@ export default class TranspileCommand extends XernerxMessageCommand {
     }
 
     reply(message: XernerxMessage, msg: string) {
-        return message.util.reply({ content: msg } as unknown as MessagePayload);
+        return embedify(message, msg, 'Transpile');
     }
 }

@@ -22,7 +22,14 @@ export default class XernerxCommands extends XernerxExtension {
             cache: {
                 messages: options?.cache?.messages || 1000,
             },
+            useEmbeds: options?.useEmbeds ?? true,
         };
+
+        (this.client.config as { xc: Options }).xc = this.options;
+
+        this.client.on('interactionCreate', async (interaction) => {
+            if (interaction.isButton() && interaction.customId == 'xc-delete-msg') interaction.message.delete().catch(() => true);
+        });
     }
 
     async main(client: XernerxClient) {
@@ -74,6 +81,7 @@ interface Options {
     cache?: {
         messages?: number;
     };
+    useEmbeds: boolean;
 }
 
 export { version };

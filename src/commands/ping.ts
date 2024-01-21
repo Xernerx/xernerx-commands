@@ -1,4 +1,5 @@
 import { XernerxMessageCommand } from 'xernerx';
+import embedify from '../models/embedify.js';
 
 export default class PingCommand extends XernerxMessageCommand {
     constructor() {
@@ -17,6 +18,6 @@ export default class PingCommand extends XernerxMessageCommand {
         const bot = message.client.ws.ping,
             api = Number(Date.now()) - message.createdTimestamp;
 
-        return await message.util.reply(`**PONG**\n>>> **Bot**: \`${bot}ms.\`\n**API**: \`${api}ms.\`\n**Time**: \`${start - (await Number(Date.now()))}ms.\``);
+        return await embedify(message, `>>> **Bot**: \`${bot}ms.\`\n**API**: \`${api}ms.\`\n**Time**: \`${start - (await Number(Date.now()))}ms.\``, '🏓 PONG!');
     }
 }
