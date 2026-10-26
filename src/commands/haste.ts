@@ -9,10 +9,11 @@ export class XernerxCommandsHasteCommand extends MessageCommandBuilder {
 	constructor() {
 		super('haste', {
 			name: 'haste',
+			alias: ['cat', 'tree'],
 			strict: {
 				owner: true,
 			},
-			description: 'Browse directories or haste file contents.',
+			description: 'Browse directories or haste file contents (inspired by Jishaku jsk cat).',
 			category: 'XernerxCommand',
 		});
 	}

@@ -5,17 +5,22 @@ import { CommandsClient, CommandsClientOptions, CommandRecord } from './client/C
 import { XernerxCommands, XernerxCommandsOptions, NormalizedXernerxCommandsOptions, CommandName } from './client/XernerxCommands.js';
 import { post, serializeCommand, extractClientCommands, CommandBody, CommandOptionBody, CommandInput, CommandsPayload } from './functions/post.js';
 import { DocumentationCommand } from './commands/documentation.js';
+import { DebugCommand } from './commands/debug.js';
 import { EvaluateCommand } from './commands/evaluate.js';
+import { GitCommand } from './commands/git.js';
 import { XernerxCommandsHasteCommand } from './commands/haste.js';
 import { MainCommand, XC_VERSION as version } from './commands/main.js';
 import { PingCommand } from './commands/ping.js';
+import { RepeatCommand } from './commands/repeat.js';
 import { XernerxCommandsShellCommand } from './commands/shell.js';
+import { SourceCommand } from './commands/source.js';
+import { SudoCommand } from './commands/sudo.js';
 import { TranspileCommand } from './commands/transpile.js';
 import { embedify } from './models/embedify.js';
 import { haste } from './models/haste.js';
 import { reply } from './models/reply.js';
 import { shell } from './models/shell.js';
-import { source } from './models/source.js';
+import { source, resolveCommandSource } from './models/source.js';
 
 export {
 	XernerxCommands,
@@ -25,17 +30,23 @@ export {
 	serializeCommand,
 	extractClientCommands,
 	DocumentationCommand,
+	DebugCommand,
 	EvaluateCommand,
+	GitCommand,
 	XernerxCommandsHasteCommand,
 	MainCommand,
 	PingCommand,
+	RepeatCommand,
 	XernerxCommandsShellCommand,
+	SourceCommand,
+	SudoCommand,
 	TranspileCommand,
 	embedify,
 	haste,
 	reply,
 	shell,
 	source,
+	resolveCommandSource,
 	version,
 };
 

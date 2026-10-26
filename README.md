@@ -73,14 +73,19 @@ await commands.clearCommands();
 | useEmbeds        | boolean                           | `true`  | false    | Whether command responses should use Discord embeds when permitted.          |
 | registerCommands | boolean                           | `true`  | false    | Whether to register the built-in developer message commands on the client.   |
 
-## Built-in Developer Commands
+## Built-in Developer Commands (Jishaku / `jsk` Inspired)
 
-| Name          | Aliases  | Description                                                            |
-| ------------- | -------- | ---------------------------------------------------------------------- |
-| xc!           |          | Displays bot, shard, cache, intent, and framework runtime information. |
-| evaluate      | eval, ev | Evaluates JavaScript/TypeScript code (inspired by Jishaku).            |
-| ping          |          | Displays websocket, API, and round-trip latency.                       |
-| shell         | sh       | Executes a shell command and returns stdout/stderr.                    |
-| transpile     | t, tr    | Pipes code into a specified language/engine runtime.                   |
-| haste         |          | Lists directory contents or uploads file source to a Hastebin service. |
-| documentation | docs     | Queries the Xernerx Developer Documentation catalog.                   |
+| Name          | Aliases              | Description                                                                                  |
+| ------------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| xc!           | jsk, jishaku, status | Displays bot, process memory/PID, shard, cache, intent, and framework runtime information.   |
+| evaluate      | eval, ev, js, ts, py | Evaluates JS/TS code with `_`, `message`, `client`, `guild`, `channel`, `Discord` in scope.  |
+| shell         | sh                   | Executes a shell command and returns stdout/stderr.                                          |
+| git           |                      | Shortcut for running `git` commands in the workspace shell (`jsk git`).                      |
+| source        | src                  | Displays the source code of a registered bot command or JS expression (`jsk source`).        |
+| haste         | cat, tree            | Lists directory trees or reads/uploads file source to a Hastebin service (`jsk cat`).        |
+| ping          | rtt                  | Displays WebSocket, API, and round-trip latency (`jsk rtt`).                                 |
+| debug         | dbg                  | Executes a command, timing its duration (`ms`) and catching thrown stack traces (`jsk dbg`). |
+| repeat        |                      | Repeats a command `<count>` times sequentially (`jsk repeat`).                               |
+| su            | sudo, in             | Runs a command as another user (`su`), in another channel (`in`), or via `sudo`.             |
+| transpile     | t, tr                | Pipes code into a specified language/engine runtime.                                         |
+| documentation | docs                 | Queries the Xernerx Developer Documentation catalog.                                         |

@@ -8,10 +8,11 @@ export class PingCommand extends MessageCommandBuilder {
 	constructor() {
 		super('ping', {
 			name: 'ping',
+			alias: ['rtt'],
 			strict: {
 				owner: true,
 			},
-			description: 'A ping command that keeps track of all pings.',
+			description: 'Measures gateway WebSocket, API, and round-trip latency (inspired by Jishaku jsk rtt).',
 			category: 'XernerxCommand',
 		});
 	}

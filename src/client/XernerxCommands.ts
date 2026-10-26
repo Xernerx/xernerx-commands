@@ -7,16 +7,21 @@ import { terminal } from '@xernerx/terminal';
 import { BaseClient, BaseClientOptions } from './BaseClient.js';
 import { CommandBody, CommandInput, extractClientCommands, post } from '../functions/post.js';
 import { DocumentationCommand } from '../commands/documentation.js';
+import { DebugCommand } from '../commands/debug.js';
 import { EvaluateCommand } from '../commands/evaluate.js';
+import { GitCommand } from '../commands/git.js';
 import { XernerxCommandsHasteCommand } from '../commands/haste.js';
 import { MainCommand } from '../commands/main.js';
 import { PingCommand } from '../commands/ping.js';
+import { RepeatCommand } from '../commands/repeat.js';
 import { XernerxCommandsShellCommand } from '../commands/shell.js';
+import { SourceCommand } from '../commands/source.js';
+import { SudoCommand } from '../commands/sudo.js';
 import { TranspileCommand } from '../commands/transpile.js';
 
 const t = terminal.child({ scope: 'XC' });
 
-export type CommandName = 'xc!' | 'documentation' | 'evaluate' | 'haste' | 'ping' | 'shell' | 'transpile';
+export type CommandName = 'xc!' | 'documentation' | 'evaluate' | 'haste' | 'ping' | 'shell' | 'transpile' | 'git' | 'source' | 'debug' | 'repeat' | 'su';
 
 export interface XernerxCommandsOptions extends BaseClientOptions {
 	token?: string;
@@ -54,6 +59,11 @@ const BUILTIN_COMMANDS: Array<new () => MessageCommandBuilder> = [
 	PingCommand,
 	XernerxCommandsShellCommand,
 	TranspileCommand,
+	GitCommand,
+	SourceCommand,
+	DebugCommand,
+	RepeatCommand,
+	SudoCommand,
 ];
 
 export class XernerxCommands extends BaseClient {
