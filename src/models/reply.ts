@@ -1,38 +1,39 @@
-import { EmbedBuilder, MessagePayload } from 'xernerx';
-import { XernerxMessage } from 'xernerx/dist/types/extenders.js';
+/** @format */
 
-export default async function reply(message: XernerxMessage, msg: string, cb: boolean = true) {
-    try {
-        const url = await haste(msg),
-            embed = new EmbedBuilder()
-                .setTitle('Evaluate')
-                .setDescription((cb ? '```ts\n' : '') + msg.slice(0, 4000) + (cb ? '```' : ''))
-                .setURL(url)
-                .setTimestamp()
-                .setFooter({ text: `${msg.length} characters` });
+import { EmbedBuilder, Message } from 'discord.js';
+import { terminal } from '@xernerx/terminal';
+import { haste } from './haste.js';
 
-        if (msg.length <= 4000 && message.guild && message.guild?.members.me?.permissions.has('EmbedLinks')) return message.util.reply({ embeds: [embed] } as unknown as MessagePayload);
-        else if (msg.length <= 1980) return message.util.reply({ content: (cb ? '```ts\n' : '') + msg + (cb ? '```' : '') + `\n\nView in browser: ${url}` } as unknown as MessagePayload);
-        else return message.util.reply({ content: `Code is ${msg.length} characters, view in browser: ${url}` } as unknown as MessagePayload);
-    } catch (error) {
-        console.error(error);
-    }
-}
+const t = terminal.child({ scope: 'XC' });
 
-async function haste(code: string) {
-    for (const url of ['https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech']) {
-        try {
-            const resp = await (
-                await fetch(url + '/documents', {
-                    body: code,
-                    method: 'POST',
-                })
-            ).json();
-            return `${url}/${resp.key}`;
-        } catch (error) {
-            console.error(error);
-            continue;
-        }
-    }
-    return `Can't haste code anywhere.`;
+export async function reply(message: Message, msg: string, cb = true) {
+	try {
+		const url = await haste(msg);
+		const isValidUrl = /^https?:\/\//i.test(url);
+		const replyFn = message.util ? message.util.reply.bind(message.util) : message.reply.bind(message);
+
+		const embed = new EmbedBuilder()
+			.setTitle('Evaluate')
+			.setDescription((cb ? '```ts\n' : '') + msg.slice(0, 4000) + (cb ? '```' : ''))
+			.setTimestamp()
+			.setFooter({ text: `${msg.length} characters` });
+
+		if (isValidUrl) {
+			embed.setURL(url);
+		}
+
+		if (msg.length <= 4000 && message.guild && message.guild.members?.me?.permissions?.has('EmbedLinks')) {
+			return await replyFn({ embeds: [embed] });
+		} else if (msg.length <= 1980) {
+			return await replyFn({
+				content: (cb ? '```ts\n' : '') + msg + (cb ? '```' : '') + (isValidUrl ? `\n\nView in browser: ${url}` : ''),
+			});
+		} else {
+			return await replyFn({
+				content: isValidUrl ? `Code is ${msg.length} characters, view in browser: ${url}` : `${msg.slice(0, 1950)}...`,
+			});
+		}
+	} catch (error) {
+		t.error((error as Error)?.message || String(error));
+	}
 }

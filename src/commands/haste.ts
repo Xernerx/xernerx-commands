@@ -1,61 +1,66 @@
-import * as fs from 'fs';
-import { XernerxMessageCommand } from 'xernerx';
-import embedify from '../models/embedify.js';
+/** @format */
 
-export default class XernerxCommandsHasteCommand extends XernerxMessageCommand {
-    constructor() {
-        super('haste', {
-            name: 'haste',
-            strict: {
-                owner: true,
-            },
-            args: [
-                {
-                    type: 'rest',
-                    name: 'rest',
-                },
-            ],
-        });
-    }
+import * as fs from 'node:fs';
+import { MessageCommandBuilder } from '@xernerx/framework';
+import type { Message } from 'discord.js';
+import { embedify } from '../models/embedify.js';
 
-    public async exec(message: any, { args }: any) {
-        try {
-            const curDir = fs.readdirSync(`./${args.rest || ''}`);
-            const curPath = fs.realpathSync(`./${args.rest || ''}`);
+export class XernerxCommandsHasteCommand extends MessageCommandBuilder {
+	constructor() {
+		super('haste', {
+			name: 'haste',
+			strict: {
+				owner: true,
+			},
+			description: 'Browse directories or haste file contents.',
+			category: 'XernerxCommand',
+		});
+	}
 
-            if (Array.isArray(curDir)) {
-                return await embedify(
-                    message,
-                    `Your current location.\n\`${curPath}\`\n${curDir
-                        .map((dir, i) => {
-                            let type = '';
+	public override async exec(message: Message, rawArgs?: string[] | { args?: { rest?: string } }) {
+		const owners = (message.client.settings?.owners as string[]) || [];
+		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;
 
-                            i + 1 == curDir.length ? (type += '└─ ') : (type += '├─ ');
+		const rest = Array.isArray(rawArgs) ? rawArgs.join(' ') : rawArgs && typeof rawArgs === 'object' && 'args' in rawArgs ? rawArgs.args?.rest || '' : message.util?.args?.join(' ') || '';
 
-                            try {
-                                fs.readdirSync(`${curPath}/${dir}`);
+		try {
+			const curDir = fs.readdirSync(`./${rest || ''}`);
+			const curPath = fs.realpathSync(`./${rest || ''}`);
 
-                                type += '📁';
-                            } catch {
-                                type += '📄';
-                            }
+			if (Array.isArray(curDir)) {
+				return await embedify(
+					message,
+					`Your current location.\n\`${curPath}\`\n${curDir
+						.map((dir, i) => {
+							let type = '';
 
-                            return `${type} \`${dir}\``;
-                        })
-                        .join('\n')}`,
-                    'Haste'
-                );
-            }
-        } catch {
-            try {
-                const src = fs.readFileSync(`./${args.rest || ''}`, { encoding: 'utf-8' });
+							i + 1 === curDir.length ? (type += '└─ ') : (type += '├─ ');
 
-                return await embedify(message, `\`\`\`${args.rest.split('.')[args.rest.split('.').length - 1]}\n${src}\`\`\``, 'Haste');
-            } catch {
-                const curPath = fs.realpathSync(`./`) + `\\${args.rest.replace(`/`, '\\')}` || '';
+							try {
+								fs.readdirSync(`${curPath}/${dir}`);
 
-                return await embedify(message, `\`${curPath}\` is not a valid path.`, 'Haste');
-            }
-        }
-    }
+								type += '📁';
+							} catch {
+								type += '📄';
+							}
+
+							return `${type} \`${dir}\``;
+						})
+						.join('\n')}`,
+					'Haste'
+				);
+			}
+		} catch {
+			try {
+				const src = fs.readFileSync(`./${rest || ''}`, { encoding: 'utf-8' });
+				const ext = rest.includes('.') ? rest.split('.')[rest.split('.').length - 1] : 'txt';
+
+				return await embedify(message, `\`\`\`${ext}\n${src}\`\`\``, 'Haste');
+			} catch {
+				const curPath = `${fs.realpathSync('./')}\\${rest.replace('/', '\\')}`;
+
+				return await embedify(message, `\`${curPath}\` is not a valid path.`, 'Haste', false);
+			}
+		}
+	}
 }

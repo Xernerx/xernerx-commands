@@ -1,46 +1,86 @@
-# xernerx-commands
+<!-- @format -->
+
+# @xernerx/commands
+
+Xernerx Commands is an extension for `@xernerx/framework` containing developer utility commands (`xc!`, `evaluate`, `ping`, `shell`, `transpile`, `haste`, `documentation`) and the official SDK to sync and manage Discord bot commands on `https://api.xernerx.com/v1/bots/:id/commands`.
 
 ## Install
 
+```bash
+pnpm add @xernerx/commands
 ```
-npm install xernerx-commands
+
+## Usage with `@xernerx/framework`
+
+```ts
+import { XernerxClient } from '@xernerx/framework';
+import { XernerxCommands } from '@xernerx/commands';
+
+const client = new XernerxClient({
+	intents: ['Guilds', 'GuildMessages', 'MessageContent'],
+	token: process.env.DISCORD_BOT_TOKEN!,
+	owners: ['YOUR_USER_ID'],
+});
+
+// Register developer message commands and automatically sync slash/context command bodies to the Xernerx Suite API
+client.modules.extensionHandler.loadExtensions(
+	new XernerxCommands(client, {
+		token: process.env.XERNERX_TOKEN!,
+		prefix: 'xc!',
+		useEmbeds: true,
+	})
+);
 ```
 
-ee
+## Standalone API Client (`CommandsClient`)
 
-## Setup
+```ts
+import { CommandsClient } from '@xernerx/commands';
 
-```js
-import { XernerxCommands } from 'xernerx-commands';
-import XernerxClient from 'xernerx';
+const commands = new CommandsClient({
+	botId: 'YOUR_BOT_ID',
+	token: process.env.XERNERX_API_TOKEN!,
+});
 
-new (class Client extends XernerxClient {
-    constructor() {
-        super(discordOptions, clientOptions);
+// Sync / post commands body to Xernerx Suite API
+await commands.postCommands([
+	{
+		name: 'ping',
+		description: 'Replies with Pong!',
+		type: 1,
+	},
+]);
 
-        this.modules.commandHandler.loadMessageCommands(messageCommandOptions);
+// Fetch commands from Xernerx Suite API
+const currentCommands = await commands.getCommands();
 
-        this.modules.extensionHandler.loadExtensions({
-            extensions: [new XernerxCommands(this, options)],
-        });
-
-        this.login('token');
-    }
-})();
+// Delete a specific command or clear all commands
+await commands.deleteCommands('ping');
+await commands.clearCommands();
 ```
 
 ## Options
 
-| Name    | Type                              | Default | Required | Description                                                          |
-| ------- | --------------------------------- | ------- | -------- | -------------------------------------------------------------------- |
-| include | Array\<string\> \| null           | null    | false    | The commands that should be included. (will only load specified)     |
-| exclude | Array\<string\> \| null           | null    | false    | The commands that should be excluded. (will only load not specified) |
-| prefix  | Array\<string\> \| string \| null | null    | false    | An extra prefix just for these commands.                             |
+| Name             | Type                              | Default | Required | Description                                                                  |
+| ---------------- | --------------------------------- | ------- | -------- | ---------------------------------------------------------------------------- |
+| token            | string                            | `""`    | false    | Xernerx Suite API token to automatically post/sync commands body on startup. |
+| url              | string                            | auto    | false    | Custom Xernerx Suite API base URL (`https://api.xernerx.com` by default).    |
+| dev              | boolean                           | `false` | false    | Use local development API URL (`http://localhost:4001`).                     |
+| interval         | number                            | —       | false    | Optional interval in ms to periodically re-sync commands body.               |
+| include          | Array\<CommandName\> \| null      | `null`  | false    | Only load the specified built-in developer commands.                         |
+| exclude          | Array\<CommandName\> \| null      | `null`  | false    | Exclude the specified built-in developer commands.                           |
+| prefix           | Array\<string\> \| string \| null | `'xc!'` | false    | Prefix(es) for the built-in developer message commands.                      |
+| useEmbeds        | boolean                           | `true`  | false    | Whether command responses should use Discord embeds when permitted.          |
+| registerCommands | boolean                           | `true`  | false    | Whether to register the built-in developer message commands on the client.   |
 
-## Commands
+## Built-in Developer Commands
 
-| Name          | aliases  | Description                                                                  |
-| ------------- | -------- | ---------------------------------------------------------------------------- |
-| evaluate      | eval, ev | A command based on the Jishaku extension for discord.py.                     |
-| ping          |          | A ping that will provide you with all pings.                                 |
-| documentation | docs     | A command that allows you to get the documentation of Discord.js or Xernerx. |
+| Name          | Aliases  | Description                                                            |
+| ------------- | -------- | ---------------------------------------------------------------------- |
+| xc!           |          | Displays bot, shard, cache, intent, and framework runtime information. |
+| evaluate      | eval, ev | Evaluates JavaScript/TypeScript code (inspired by Jishaku).            |
+| ping          |          | Displays websocket, API, and round-trip latency.                       |
+| shell         | sh       | Executes a shell command and returns stdout/stderr.                    |
+| transpile     | t, tr    | Pipes code into a specified language/engine runtime.                   |
+| haste         |          | Lists directory contents or uploads file source to a Hastebin service. |
+| documentation | docs     | Queries the Xernerx Developer Documentation catalog.                   |

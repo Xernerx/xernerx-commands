@@ -1,42 +1,67 @@
-import { XernerxMessageCommand, version, Discord, XernerxMessage } from 'xernerx';
-import { version as XCVersion } from '../main.js';
-import embedify from '../models/embedify.js';
+/** @format */
 
-export default class MainCommand extends XernerxMessageCommand {
-    constructor() {
-        super('xc!', {
-            name: 'xc!',
-            regex: new RegExp(`^xc!\\B`, 'gim'),
-            strict: {
-                owner: true,
-            },
-            description: 'A Main command that keeps track of all Mains.',
-            category: 'XernerxCommand',
-        });
-    }
+import { MessageCommandBuilder } from '@xernerx/framework';
+import { version as djsVersion, type Message } from 'discord.js';
+import { embedify } from '../models/embedify.js';
 
-    async exec(message: any) {
-        const guilds = await message.client.guilds.cache,
-            userCount =
-                ((await Promise.all(guilds.map(async (guild: Record<'fetch', Function>) => (await guild.fetch())?.memberCount))) as Record<'reduce', Function>)?.reduce(
-                    (a: number, b: number) => (a += b)
-                ) || message.client.users.cache.size,
-            hasIntent = (intent: string) => (message.client.options.intents.has(intent) ? 'enabled' : 'disabled');
+export const XC_VERSION = '0.2.1';
 
-        return await embedify(
-            message,
-            `XernerxCommands \`v${XCVersion}\`, Xernerx \`v${version}\`, Discord.js \`v${Discord.version}\`, \`Node ${process.version}\` on \`${
-                process.platform
-            }\`.\nModules were loaded <t:${Math.round(message.client.readyTimestamp / 1000)}:R>, handlers were loaded <t:${Math.round(message.client.readyTimestamp / 1000)}:R>\n\nThis bot is ${
-                message.client.options.shardCount === 0 ? 'not sharded' : `on shard ${message.client.options.shards[0]}`
-            } and can see ${guilds.size} guild${guilds.size > 1 ? 's' : ''} and ${userCount} user${userCount > 1 ? 's' : ''}. Using \`${await message.client.guilds.fetch(
-                message.client.settings.local
-            )}\` as local guild with owners ${(await Promise.all(message.client.settings.ownerId.map(async (o: any) => await message.client.users.fetch(o)))).join(', ')}\nMessage cache capped at ${
-                message.channel.messages.cache.maxSize
-            }, presences intent is ${hasIntent('GuildPresences')}, members intent is ${hasIntent('GuildMembers')}, and message content intent is ${hasIntent(
-                'MessageContent'
-            )}.\nAverage websocket latency: ${message.client.ws.ping}ms.`,
-            'Xernerx'
-        );
-    }
+export class MainCommand extends MessageCommandBuilder {
+	constructor() {
+		super('xc!', {
+			name: 'xc!',
+			strict: {
+				owner: true,
+			},
+			description: 'A Main command that keeps track of all Mains.',
+			category: 'XernerxCommand',
+		});
+	}
+
+	override async exec(message: Message) {
+		const owners = (message.client.settings?.owners as string[]) || [];
+		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;
+
+		const guilds = message.client.guilds.cache;
+		const userCount = guilds.map((guild) => guild.memberCount || 0).reduce((a, b) => a + b, 0) || message.client.users.cache.size;
+
+		const hasIntent = (intent: any) => (message.client.options.intents.has(intent) ? 'enabled' : 'disabled');
+		const readyUnix = Math.round((message.client.readyTimestamp || Date.now()) / 1000);
+
+		const shardStatus = !message.client.sharded ? 'not sharded' : `on shard ${message.client.cluster?.id ?? message.client.shardId ?? 0}`;
+
+		const localGuildIds = Array.isArray(message.client.settings?.guildId) ? message.client.settings.guildId : message.client.settings?.guildId ? [message.client.settings.guildId] : [];
+
+		const localGuildNames =
+			localGuildIds.length > 0
+				? (
+						await Promise.all(
+							localGuildIds.map(async (id) => {
+								const g = await message.client.guilds.fetch(id).catch(() => null);
+								return g?.name || id;
+							})
+						)
+					).join(', ')
+				: 'None';
+
+		const ownerTags =
+			owners.length > 0
+				? (
+						await Promise.all(
+							owners.map(async (o) => {
+								const u = await message.client.users.fetch(o).catch(() => null);
+								return u ? `${u}` : o;
+							})
+						)
+					).join(', ')
+				: 'None';
+
+		const maxCacheSize = (message.channel as any)?.messages?.cache?.maxSize ?? ((message.client as any).config?.xc?.cache?.messages || 1000);
+
+		return await embedify(
+			message,
+			`XernerxCommands \`v${XC_VERSION}\`, Discord.js \`v${djsVersion}\`, \`Node ${process.version}\` on \`${process.platform}\`.\nModules were loaded <t:${readyUnix}:R>, handlers were loaded <t:${readyUnix}:R>\n\nThis bot is ${shardStatus} and can see ${guilds.size} guild${guilds.size !== 1 ? 's' : ''} and ${userCount} user${userCount !== 1 ? 's' : ''}. Using \`${localGuildNames}\` as local guild with owners ${ownerTags}\nMessage cache capped at ${maxCacheSize}, presences intent is ${hasIntent('GuildPresences')}, members intent is ${hasIntent('GuildMembers')}, and message content intent is ${hasIntent('MessageContent')}.\nAverage websocket latency: ${message.client.ws.ping}ms.`,
+			'Xernerx'
+		);
+	}
 }

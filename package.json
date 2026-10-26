@@ -1,48 +1,68 @@
 {
-    "name": "xernerx-commands",
-    "version": "0.2.1",
-    "type": "module",
-    "description": "An extension for the xernerx framework containing a collection of commands useful for when developing a bot.",
-    "main": "dist/main.js",
-    "keywords": [
-        "xernerx"
-    ],
-    "author": "Dummi",
-    "license": "MIT",
-    "homepage": "https://thedummi.github.io/xernerx/home.html",
-    "packageManager": "npm@8.5.5",
-    "exports": {
-        "import": "./dist/main.js",
-        "require": "./dist/main.cjs",
-        "types": null,
-        "node": null,
-        "default": null
-    },
-    "scripts": {
-        "start": "npm i && npm fund && npm audit fix --force && npm link && tsc -w",
-        "commit": "npm run write && git add . && node ./.github/scripts/message.js",
-        "tag": "node ./.github/scripts/tag.js",
-        "patch": "npm run commit && npm version patch && npm run tag && npm publish && git push",
-        "minor": "npm run commit && npm version minor && npm run tag && npm publish && git push",
-        "major": "npm run commit && npm version major && npm run tag && npm publish && git push",
-        "site": "git add docs && npm run commit && git push",
-        "write": "npm i && npm run build && npm run format",
-        "format": "npx prettier --write src dist",
-        "build": "tsc && npm run format"
-    },
-    "bugs": {
-        "url": "https://github.com/TheDummi/xernerx-commands/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/TheDummi/xernerx-commands.git"
-    },
-    "dependencies": {
-        "xernerx": "^4.14.1"
-    },
-    "devDependencies": {
-        "@types/node": "^18.11.18",
-        "prettier": "^2.8.4",
-        "typescript": "^5.0.4"
-    }
+	"name": "@xernerx/commands",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "0.2.2",
+	"type": "module",
+	"main": "./dist/main.cjs",
+	"module": "./dist/main.js",
+	"types": "./dist/main.d.ts",
+	"description": "Xernerx Commands",
+	"homepage": "www.xernerx.com",
+	"files": [
+		"src",
+		"dist"
+	],
+	"exports": {
+		"require": {
+			"types": "./dist/main.d.cts",
+			"default": "./dist/main.cjs"
+		},
+		"import": {
+			"types": "./dist/main.d.ts",
+			"default": "./dist/main.js"
+		}
+	},
+	"scripts": {
+		"commit": "prettier --write . && node -e \"const fs=require('fs'),cp=require('child_process');const has=fs.readdirSync('.changeset').some(f=>f.endsWith('.md')&&f.toLowerCase()!=='readme.md');cp.execSync(!process.stdin.isTTY&&has?'pnpm exec changeset status':'pnpm exec changeset',{stdio:'inherit'})\"",
+		"ship": "changeset version && pnpm run build && git add . && git commit -m \"chore: release\" && changeset tag && git push --follow-tags",
+		"docs": "typedoc",
+		"build": "pnpm i && tsup && attw --pack && pnpm run docs",
+		"dev": "pnpm i && pnpm link && tsup --watch",
+		"test": "pnpm install --engine-strict=true"
+	},
+	"keywords": [
+		"xernerx",
+		"commands",
+		"framework"
+	],
+	"author": "Xernerx Studios",
+	"license": "MIT",
+	"packageManager": "pnpm@11.24.0",
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.18.2",
+		"@changesets/cli": "^3.0.1",
+		"@types/node": "^24",
+		"@xernerx/framework": "1.0.2",
+		"discord.js": "14.22.1",
+		"prettier": "^3.8.3",
+		"tslib": "^2.8.1",
+		"tsup": "^8.5.1",
+		"typedoc": "^0.28.20",
+		"typedoc-github-theme": "^0.4.0",
+		"typedoc-plugin-extras": "^4.0.1",
+		"typedoc-plugin-zod": "^1.4.3",
+		"typescript": "^6.0.3"
+	},
+	"dependencies": {
+		"@xernerx/terminal": "^1.1.13"
+	},
+	"peerDependencies": {
+		"@xernerx/framework": ">=1.0.0",
+		"discord.js": ">=14.0.0"
+	},
+	"engines": {
+		"node": ">=24"
+	}
 }

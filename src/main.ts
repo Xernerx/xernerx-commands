@@ -1,87 +1,53 @@
-import * as fs from 'node:fs';
-import path from 'node:path';
-import XernerxClient, { XernerxExtension, Options as DiscordOptions, XernerxLog } from 'xernerx';
+/** @format */
 
-const version = JSON.parse(fs.readFileSync('./node_modules/xernerx-commands/package.json', 'utf-8')).version;
+import { BaseClient, BaseClientOptions } from './client/BaseClient.js';
+import { CommandsClient, CommandsClientOptions, CommandRecord } from './client/CommandsClient.js';
+import { XernerxCommands, XernerxCommandsOptions, NormalizedXernerxCommandsOptions, CommandName } from './client/XernerxCommands.js';
+import { post, serializeCommand, extractClientCommands, CommandBody, CommandOptionBody, CommandInput, CommandsPayload } from './functions/post.js';
+import { DocumentationCommand } from './commands/documentation.js';
+import { EvaluateCommand } from './commands/evaluate.js';
+import { XernerxCommandsHasteCommand } from './commands/haste.js';
+import { MainCommand, XC_VERSION as version } from './commands/main.js';
+import { PingCommand } from './commands/ping.js';
+import { XernerxCommandsShellCommand } from './commands/shell.js';
+import { TranspileCommand } from './commands/transpile.js';
+import { embedify } from './models/embedify.js';
+import { haste } from './models/haste.js';
+import { reply } from './models/reply.js';
+import { shell } from './models/shell.js';
+import { source } from './models/source.js';
 
-new XernerxLog(true).update(version, 'https://raw.githubusercontent.com/xernerx/xernerx-commands/main/package.json');
+export {
+	XernerxCommands,
+	CommandsClient,
+	BaseClient,
+	post,
+	serializeCommand,
+	extractClientCommands,
+	DocumentationCommand,
+	EvaluateCommand,
+	XernerxCommandsHasteCommand,
+	MainCommand,
+	PingCommand,
+	XernerxCommandsShellCommand,
+	TranspileCommand,
+	embedify,
+	haste,
+	reply,
+	shell,
+	source,
+	version,
+};
 
-export default class XernerxCommands extends XernerxExtension {
-    public readonly client;
-    public readonly options;
-
-    constructor(client: XernerxClient, options?: Options) {
-        super('XernerxCommands');
-
-        this.client = client;
-
-        this.options = {
-            prefix: options?.prefix || null,
-            include: options?.include || null,
-            exclude: options?.exclude || null,
-            cache: {
-                messages: options?.cache?.messages || 1000,
-            },
-            useEmbeds: options?.useEmbeds ?? true,
-        };
-
-        (this.client.config as { xc: Options }).xc = this.options;
-
-        this.client.on('interactionCreate', async (interaction) => {
-            if (interaction.isButton() && interaction.customId == 'xc-delete-msg') interaction.message.delete().catch(() => true);
-        });
-    }
-
-    async main(client: XernerxClient) {
-        this.client.options.makeCache = DiscordOptions.cacheWithLimits({ MessageManager: this.options.cache.messages });
-
-        const dir = path.resolve('./node_modules/xernerx-commands/dist/commands');
-        const files = fs.readdirSync(dir).filter((file) => file.endsWith('.js'));
-
-        for (const file of files) {
-            try {
-                let command = (await import(`file://${dir}/${file}`)).default;
-
-                if (command.default) command = command.default;
-
-                command = new command();
-
-                command.client = this.client;
-
-                command.filetype = 'MessageCommand';
-
-                command.filepath = `${dir}\\${file}`;
-
-                command.file = file;
-
-                if (this.options.exclude && this.options.exclude.includes(command.name)) return;
-
-                if (this.options.include && !this.options.include.includes(command.name)) return;
-
-                if (this.options.prefix) {
-                    if (typeof this.options.prefix === 'string') this.options.prefix = [this.options.prefix];
-
-                    command.prefix = this.options.prefix;
-                }
-
-                this.client.commands.message.set(command?.name || command?.name, command);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    }
-}
-
-type Command = 'documentation' | 'evaluate' | 'ping' | 'transpile';
-
-interface Options {
-    include?: Array<Command> | null; // An array with command names to include.
-    exclude?: Array<Command> | null; // An array with command names to exclude.
-    prefix?: string | Array<string> | null; // An array of strings for prefixes to listen to.
-    cache?: {
-        messages?: number;
-    };
-    useEmbeds: boolean;
-}
-
-export { version };
+export type {
+	XernerxCommandsOptions,
+	NormalizedXernerxCommandsOptions,
+	CommandName,
+	CommandsClientOptions,
+	CommandRecord,
+	BaseClientOptions,
+	CommandBody,
+	CommandOptionBody,
+	CommandInput,
+	CommandsPayload,
+};

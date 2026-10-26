@@ -1,32 +1,38 @@
-import { exec } from 'child_process';
-import { inspect, promisify } from 'util';
-import { XernerxMessageCommand } from 'xernerx';
-import embedify from '../models/embedify.js';
+/** @format */
+
+import { exec } from 'node:child_process';
+import { inspect, promisify } from 'node:util';
+import { MessageCommandBuilder } from '@xernerx/framework';
+import type { Message } from 'discord.js';
+import { embedify } from '../models/embedify.js';
 
 const shell = promisify(exec);
 
-export default class XernerxCommandsShellCommand extends XernerxMessageCommand {
-    constructor() {
-        super('shell', {
-            name: 'shell',
-            aliases: ['sh'],
-            strict: {
-                owner: true,
-            },
-            args: [
-                {
-                    type: 'rest',
-                    name: 'code',
-                },
-            ],
-        });
-    }
+export class XernerxCommandsShellCommand extends MessageCommandBuilder {
+	constructor() {
+		super('shell', {
+			name: 'shell',
+			alias: ['sh'],
+			strict: {
+				owner: true,
+			},
+			description: 'Execute a shell command.',
+			category: 'XernerxCommand',
+		});
+	}
 
-    async exec(message: any, { args }: any) {
-        if (!args.code) return message.util.reply({ content: `Specify a command.` });
+	override async exec(message: Message, rawArgs?: string[] | { args?: { code?: string } }) {
+		const owners = (message.client.settings?.owners as string[]) || [];
+		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;
 
-        return shell(args.code)
-            .then(async ({ stdout, stderr }) => await embedify(message, `\`\`\`ps\n${stdout || stderr}\`\`\``, 'Shell'))
-            .catch(async (error) => await embedify(message, `\`\`\`ps\n${inspect(error)}\`\`\``, 'Shell'));
-    }
+		const replyFn = message.util ? message.util.reply.bind(message.util) : message.reply.bind(message);
+
+		const code = Array.isArray(rawArgs) ? rawArgs.join(' ') : rawArgs && typeof rawArgs === 'object' && 'args' in rawArgs ? rawArgs.args?.code || '' : message.util?.args?.join(' ') || '';
+
+		if (!code) return await replyFn({ content: 'Specify a command.' });
+
+		return shell(code)
+			.then(async ({ stdout, stderr }) => await embedify(message, `\`\`\`ps\n${stdout || stderr}\`\`\``, 'Shell', true))
+			.catch(async (error) => await embedify(message, `\`\`\`ps\n${inspect(error)}\`\`\``, 'Shell', false));
+	}
 }

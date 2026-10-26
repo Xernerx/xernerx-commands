@@ -1,12 +1,15 @@
-import { exec } from 'child_process';
-import { inspect, promisify } from 'util';
-import { XernerxMessage } from 'xernerx/dist/types/extenders.js';
-import reply from './reply.js';
+/** @format */
 
-const shell = promisify(exec);
+import { exec } from 'node:child_process';
+import { inspect, promisify } from 'node:util';
+import type { Message } from 'discord.js';
+import { reply } from './reply.js';
 
-export default function sh(message: XernerxMessage, args: any) {
-    return shell(args.code)
-        .then(({ stdout, stderr }) => reply(message, stdout || stderr))
-        .catch((error) => reply(message, inspect(error)));
+const execAsync = promisify(exec);
+
+export function shell(message: Message, args: { code?: string } | string[]) {
+	const code = Array.isArray(args) ? args.join(' ') : args?.code || '';
+	return execAsync(code)
+		.then(({ stdout, stderr }) => reply(message, stdout || stderr))
+		.catch((error) => reply(message, inspect(error)));
 }

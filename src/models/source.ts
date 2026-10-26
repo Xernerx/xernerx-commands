@@ -1,15 +1,24 @@
-import { inspect } from 'util';
-import { XernerxMessage } from 'xernerx/dist/types/extenders.js';
-import reply from './reply.js';
+/** @format */
 
-export default function source(message: XernerxMessage, args: any) {
-    try {
-        let response = eval(args.code);
+import { inspect } from 'node:util';
+import type { Message } from 'discord.js';
+import { reply } from './reply.js';
 
-        if (typeof response == 'object') response = inspect(response);
+export function source(message: Message, args: { code?: string } | string[]) {
+	try {
+		const code = Array.isArray(args) ? args.join(' ') : args?.code || '';
+		let fn: () => unknown;
+		try {
+			fn = new Function(`return (${code});`) as () => unknown;
+		} catch {
+			fn = new Function(code) as () => unknown;
+		}
+		let response: unknown = fn();
 
-        return reply(message, response);
-    } catch (error) {
-        return reply(message, inspect(error));
-    }
+		if (typeof response === 'object') response = inspect(response);
+
+		return reply(message, String(response));
+	} catch (error) {
+		return reply(message, inspect(error));
+	}
 }
