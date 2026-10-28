@@ -5,7 +5,14 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Built-in `haste` (aliases: `cat`, `tree`) message command that lists directory trees or reads/uploads
+ * file contents to a Hastebin-compatible service.
+ */
 export class XernerxCommandsHasteCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link XernerxCommandsHasteCommand} instance.
+	 */
 	constructor() {
 		super('haste', {
 			name: 'haste',
@@ -18,6 +25,13 @@ export class XernerxCommandsHasteCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `haste` command to display a directory tree or file contents.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional relative path arguments or structured `{ args: { rest } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	public override async exec(message: Message, rawArgs?: string[] | { args?: { rest?: string } }) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

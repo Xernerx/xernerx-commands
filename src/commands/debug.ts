@@ -6,7 +6,14 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Built-in `debug` (alias: `dbg`) message command that executes a target command and reports its
+ * execution duration in milliseconds or any thrown error stack trace.
+ */
 export class DebugCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link DebugCommand} instance.
+	 */
 	constructor() {
 		super('debug', {
 			name: 'debug',
@@ -19,6 +26,13 @@ export class DebugCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `debug` command against the specified message command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments where the first item is the target command name and the remainder are its arguments.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[]) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

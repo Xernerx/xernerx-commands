@@ -5,6 +5,13 @@ import * as Discord from 'discord.js';
 import type { Message } from 'discord.js';
 import { embedify } from './embedify.js';
 
+/**
+ * Resolves the source code or inspected representation of a registered message, slash, or context command on a client.
+ *
+ * @param client - The `@xernerx/framework` client containing `commands.message`, `commands.slash`, or `commands.context` collections.
+ * @param target - Command name, ID, or alias to look up.
+ * @returns The stringified constructor, `exec` method, or inspected command object, or `null` if not found.
+ */
 export function resolveCommandSource(client: any, target: string): string | null {
 	const clean = target.trim().toLowerCase();
 	if (!clean || !client?.commands) return null;
@@ -32,6 +39,14 @@ export function resolveCommandSource(client: any, target: string): string | null
 	return inspect(found, { depth: 3 });
 }
 
+/**
+ * Inspects the source code of a registered command or evaluates a JavaScript expression to display its source
+ * and replies to the triggering Discord message via {@link embedify}.
+ *
+ * @param message - The triggering Discord message.
+ * @param args - Command name or JavaScript expression tokens array, or an object containing a `code` string.
+ * @returns A promise that resolves to the sent reply message.
+ */
 export async function source(message: Message, args: { code?: string } | string[]) {
 	try {
 		const code = (Array.isArray(args) ? args.join(' ') : args?.code || '').trim();

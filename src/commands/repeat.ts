@@ -5,7 +5,13 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Built-in `repeat` message command that executes a target message command multiple times sequentially (up to 25 iterations).
+ */
 export class RepeatCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link RepeatCommand} instance.
+	 */
 	constructor() {
 		super('repeat', {
 			name: 'repeat',
@@ -17,6 +23,13 @@ export class RepeatCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `repeat` command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments: `[count, commandName, ...args]`.
+	 * @returns A promise that resolves when all iterations complete (or to an error reply message), or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[]) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

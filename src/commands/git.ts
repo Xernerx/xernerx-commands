@@ -8,7 +8,14 @@ import { embedify } from '../models/embedify.js';
 
 const execAsync = promisify(exec);
 
+/**
+ * Built-in `git` message command that runs `git` subcommands in the workspace shell
+ * (defaults to `git status --short --branch` when invoked without arguments).
+ */
 export class GitCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link GitCommand} instance.
+	 */
 	constructor() {
 		super('git', {
 			name: 'git',
@@ -20,6 +27,13 @@ export class GitCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `git` subcommand in the workspace shell.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional `git` subcommand arguments or structured `{ args: { code } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | { args?: { code?: string } }) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

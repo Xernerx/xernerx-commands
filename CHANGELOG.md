@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.5
+
+### Patch Changes
+
+- Simplify `CommandsClient` and `XernerxCommands` API methods to direct keywords (`get`, `post`, `sync`, `update`, `delete`, `clear`), add class-based `this.*` JSDoc `@example` blocks using `Terminal`, and update `README.md` with the official Xernerx banner, structured sections, and `docs.xernerx.com` reference links.
+
 ## 0.2.4
 
 ### Patch Changes

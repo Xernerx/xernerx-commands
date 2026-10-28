@@ -1,4 +1,10 @@
-/** @format */
+/**
+ * Entry point for `@xernerx/commands`, exporting the framework extension, standalone API client,
+ * built-in developer message commands, and helper utilities.
+ *
+ * @module @xernerx/commands
+ * @format
+ */
 
 import { BaseClient, BaseClientOptions } from './client/BaseClient.js';
 import { CommandsClient, CommandsClientOptions, CommandRecord } from './client/CommandsClient.js';

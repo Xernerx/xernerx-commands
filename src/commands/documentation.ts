@@ -4,7 +4,13 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Built-in `documentation` (alias: `docs`) message command that searches the Xernerx Developer Documentation catalog.
+ */
 export class DocumentationCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link DocumentationCommand} instance.
+	 */
 	constructor() {
 		super('documentation', {
 			name: 'documentation',
@@ -18,6 +24,13 @@ export class DocumentationCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `documentation` search command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments containing the search query.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | Record<string, any>) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

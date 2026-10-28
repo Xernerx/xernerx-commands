@@ -1,7 +1,11 @@
 /** @format */
 
 /**
- * Uploads code or text to a hastebin-compatible service and returns its URL.
+ * Uploads code or text to a Hastebin-compatible service and returns its document URL
+ * (or a fallback message if all mirrors are unreachable).
+ *
+ * @param code - The raw text or source code to upload.
+ * @returns A promise that resolves to the Hastebin document URL or a fallback message string.
  */
 export async function haste(code: string): Promise<string> {
 	for (const url of ['https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech']) {

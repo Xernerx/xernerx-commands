@@ -5,7 +5,14 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Built-in `su` (aliases: `sudo`, `in`) message command that runs a target command as another user (`su`),
+ * in another channel (`in`), or bypassing restrictions (`sudo`).
+ */
 export class SudoCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link SudoCommand} instance.
+	 */
 	constructor() {
 		super('su', {
 			name: 'su',
@@ -18,6 +25,13 @@ export class SudoCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `su` / `in` / `sudo` command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments (user/channel mention followed by command name and arguments).
+	 * @returns A promise that resolves to the target command's result or an error reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[]) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

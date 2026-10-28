@@ -2,33 +2,99 @@
 
 import type { ContextCommandBuilder, MessageCommandBuilder, SlashCommandBuilder, XernerxClient } from '@xernerx/framework';
 
+/**
+ * Serialized Discord application command option payload.
+ */
 export interface CommandOptionBody {
+	/**
+	 * Option name.
+	 */
 	name: string;
+	/**
+	 * Option description.
+	 */
 	description?: string;
+	/**
+	 * Discord application command option type (`ApplicationCommandOptionType` number or name).
+	 */
 	type?: number | string;
+	/**
+	 * Whether this option is required.
+	 */
 	required?: boolean;
+	/**
+	 * Predefined choices for string, integer, or number options.
+	 */
 	choices?: Array<{ name: string; value: string | number; name_localizations?: Record<string, string> }>;
+	/**
+	 * Nested sub-options for subcommands or subcommand groups.
+	 */
 	options?: CommandOptionBody[];
+	/**
+	 * Whether autocomplete interactions are enabled for this option.
+	 */
 	autocomplete?: boolean;
+	/**
+	 * Additional Discord API option fields (such as `min_value`, `max_value`, `channel_types`, localizations).
+	 */
 	[key: string]: any;
 }
 
+/**
+ * Serialized Discord application command payload sent to the Xernerx Suite API.
+ */
 export interface CommandBody {
+	/**
+	 * Optional Discord command Snowflake ID or custom identifier.
+	 */
 	id?: string;
+	/**
+	 * Command name.
+	 */
 	name: string;
+	/**
+	 * Command description (empty string for User/Message context menu commands).
+	 */
 	description?: string;
+	/**
+	 * Discord application command type (`1` = ChatInput, `2` = User, `3` = Message).
+	 */
 	type?: number;
+	/**
+	 * Array of command options and subcommands.
+	 */
 	options?: CommandOptionBody[];
+	/**
+	 * Additional Discord API command fields (such as `default_member_permissions`, `dm_permission`, `nsfw`, `contexts`, `integration_types`).
+	 */
 	[key: string]: any;
 }
 
+/**
+ * Accepted command representations that can be serialized and posted to the Xernerx Suite API.
+ */
 export type CommandInput = CommandBody | SlashCommandBuilder | ContextCommandBuilder | MessageCommandBuilder | Record<string, any>;
 
+/**
+ * Payload accepted by {@link post} for uploading a bot's commands to the Xernerx Suite API.
+ */
 export interface CommandsPayload {
+	/**
+	 * Discord bot / application Snowflake ID.
+	 */
 	id?: string;
+	/**
+	 * List of command builders or raw command definitions to serialize and upload.
+	 */
 	commands: CommandInput[];
 }
 
+/**
+ * Normalizes a `@xernerx/framework` command builder, Discord.js builder, or plain object into a serializable {@link CommandBody}.
+ *
+ * @param command - The command builder or plain command object to serialize.
+ * @returns The normalized {@link CommandBody} object.
+ */
 export function serializeCommand(command: CommandInput): CommandBody {
 	if (!command || typeof command !== 'object') {
 		throw new Error('Invalid command object provided.');
@@ -46,6 +112,12 @@ export function serializeCommand(command: CommandInput): CommandBody {
 	};
 }
 
+/**
+ * Extracts and serializes all slash and context menu commands currently loaded on a `XernerxClient`.
+ *
+ * @param client - The `@xernerx/framework` client (or compatible command holder) to extract commands from.
+ * @returns An array of serialized {@link CommandBody} objects.
+ */
 export function extractClientCommands(client: XernerxClient | any): CommandBody[] {
 	const collected: CommandBody[] = [];
 
@@ -72,6 +144,14 @@ export function extractClientCommands(client: XernerxClient | any): CommandBody[
 	return collected.filter((cmd) => Boolean(cmd?.name));
 }
 
+/**
+ * Posts a bot's serialized application commands to the Xernerx Suite API (`POST /v1/bots/:id/commands`).
+ *
+ * @param data - Payload containing the target bot `id` and `commands` array.
+ * @param token - Xernerx Suite API `Bearer` authentication token.
+ * @param baseUrl - Base URL of the Xernerx Suite API (defaults to `'https://api.xernerx.com'`).
+ * @returns A promise that resolves to the parsed JSON API response.
+ */
 export async function post(data: CommandsPayload, token: string, baseUrl = 'https://api.xernerx.com') {
 	const { id, commands } = data;
 

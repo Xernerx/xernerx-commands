@@ -5,11 +5,21 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import { version as djsVersion, type Message } from 'discord.js';
 import { embedify } from '../models/embedify.js';
 
+/**
+ * Current version string of the `@xernerx/commands` extension displayed by {@link MainCommand}.
+ */
 export const XC_VERSION = '0.2.1';
 
+/**
+ * Built-in `xc!` (aliases: `jsk`, `jishaku`, `status`) message command that displays bot runtime,
+ * memory usage, shard/cluster info, cache limits, gateway intents, and WebSocket latency.
+ */
 export class MainCommand extends MessageCommandBuilder {
 	private readonly moduleLoadedUnix = Math.round(Date.now() / 1000);
 
+	/**
+	 * Creates a new {@link MainCommand} instance.
+	 */
 	constructor() {
 		super('xc!', {
 			name: 'xc!',
@@ -22,6 +32,12 @@ export class MainCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `xc!` status summary command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

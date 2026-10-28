@@ -14,7 +14,15 @@ const SUPPORTED_MODES = ['js', 'ts', 'py', 'sh', 'shell', 'git', 'source', 'src'
 
 let lastResult: unknown = undefined;
 
+/**
+ * Built-in `evaluate` (aliases: `eval`, `ev`, `js`, `ts`, `py`) message command that evaluates JavaScript/TypeScript code
+ * with Discord context variables (`message`, `client`, `guild`, `channel`, `Discord`, `_`) in scope, or delegates to
+ * `shell`, `git`, and `source` sub-modes.
+ */
 export class EvaluateCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link EvaluateCommand} instance.
+	 */
 	constructor() {
 		super('evaluate', {
 			name: 'evaluate',
@@ -29,6 +37,13 @@ export class EvaluateCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `evaluate` command in the requested mode (`js`, `ts`, `py`, `sh`/`shell`, `git`, or `source`/`src`).
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments or structured `{ args: { option, code } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | { args?: { option?: string; code?: string } }) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

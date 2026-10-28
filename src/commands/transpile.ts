@@ -8,7 +8,13 @@ import { embedify } from '../models/embedify.js';
 
 const shell = promisify(exec);
 
+/**
+ * Built-in `transpile` (aliases: `t`, `tr`) message command that pipes code into a specified language/engine runtime.
+ */
 export class TranspileCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link TranspileCommand} instance.
+	 */
 	constructor() {
 		super('transpile', {
 			name: 'transpile',
@@ -21,6 +27,13 @@ export class TranspileCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `transpile` command by piping the provided code into the specified language binary.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command arguments (`[language, ...code]`) or structured `{ args: { language, code } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | { args?: { language?: string; code?: string } }): Promise<any> {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;
@@ -47,6 +60,14 @@ export class TranspileCommand extends MessageCommandBuilder {
 			.catch((error) => this.reply(message, `\`\`\`ts\n${error}\`\`\``, false));
 	}
 
+	/**
+	 * Sends a formatted embed/text response for the `transpile` command via {@link embedify}.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param msg - The response body to send.
+	 * @param success - Whether the execution succeeded (controls embed color).
+	 * @returns A promise that resolves to the sent reply message.
+	 */
 	reply(message: Message, msg: string, success = true) {
 		return embedify(message, msg, 'Transpile', success);
 	}

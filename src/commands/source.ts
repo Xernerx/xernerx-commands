@@ -4,7 +4,14 @@ import { MessageCommandBuilder } from '@xernerx/framework';
 import type { Message } from 'discord.js';
 import { source } from '../models/source.js';
 
+/**
+ * Built-in `source` (alias: `src`) message command that displays the source code for a registered bot command
+ * or JavaScript expression.
+ */
 export class SourceCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link SourceCommand} instance.
+	 */
 	constructor() {
 		super('source', {
 			name: 'source',
@@ -17,6 +24,13 @@ export class SourceCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `source` inspection command.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional command name or JavaScript expression arguments, or structured `{ args: { code } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | { args?: { code?: string } }) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;

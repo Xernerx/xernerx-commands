@@ -6,6 +6,15 @@ import { haste } from './haste.js';
 
 const t = terminal.child({ scope: 'XC' });
 
+/**
+ * Replies to a Discord message with code output (wrapped in a TypeScript code block by default)
+ * and a Hastebin mirror URL when available.
+ *
+ * @param message - The Discord message to reply to.
+ * @param msg - The text or code output to send.
+ * @param cb - Whether to wrap `msg` in a ```` ```ts ```` code block (defaults to `true`).
+ * @returns A promise that resolves to the sent reply message, or `undefined` if an error occurs.
+ */
 export async function reply(message: Message, msg: string, cb = true) {
 	try {
 		const url = await haste(msg);

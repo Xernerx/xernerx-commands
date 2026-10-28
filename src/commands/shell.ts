@@ -8,7 +8,13 @@ import { embedify } from '../models/embedify.js';
 
 const shell = promisify(exec);
 
+/**
+ * Built-in `shell` (alias: `sh`) message command that executes a shell command and replies with its stdout/stderr output.
+ */
 export class XernerxCommandsShellCommand extends MessageCommandBuilder {
+	/**
+	 * Creates a new {@link XernerxCommandsShellCommand} instance.
+	 */
 	constructor() {
 		super('shell', {
 			name: 'shell',
@@ -21,6 +27,13 @@ export class XernerxCommandsShellCommand extends MessageCommandBuilder {
 		});
 	}
 
+	/**
+	 * Executes the `shell` command in a child process and replies with its output.
+	 *
+	 * @param message - The triggering Discord message.
+	 * @param rawArgs - Optional shell command arguments or structured `{ args: { code } }` object.
+	 * @returns A promise that resolves to the sent reply message, or `undefined` if the caller is not an owner.
+	 */
 	override async exec(message: Message, rawArgs?: string[] | { args?: { code?: string } }) {
 		const owners = (message.client.settings?.owners as string[]) || [];
 		if (this.strict?.owner && owners.length > 0 && !owners.includes(message.author.id)) return;
