@@ -72,7 +72,9 @@ export class XernerxCommands extends BaseClient {
 	public readonly options: NormalizedXernerxCommandsOptions;
 	private _client!: XernerxClient | XernerxShardClient;
 	private initialized = false;
+	private listenerAttached = false;
 	private postedOnce = false;
+	private readonly builtinMap = new Map<string, MessageCommandBuilder>();
 
 	constructor(client: XernerxClient | XernerxShardClient, options: XernerxCommandsOptions = {}) {
 		super(options.token || '', { url: options.url, dev: options.dev });
@@ -173,9 +175,26 @@ export class XernerxCommands extends BaseClient {
 				command.client = client;
 				(command as any).prefix = this.options.prefix;
 
+				const originalExec = command.exec.bind(command);
+				command.exec = async (message: Message, args?: any) => {
+					if ((message as any)._xcDispatched) {
+						return await originalExec(message, args);
+					}
+					const raw = (message.content || '').trim();
+					const botId = client.user?.id;
+					const stripped = botId ? raw.replace(new RegExp(`^<@!?${botId}>\\s*`), '').trim() : raw;
+					const hasPrefix = this.options.prefix.some((p) => stripped.toLowerCase().startsWith(p.toLowerCase()));
+					if (!hasPrefix) return;
+					(message as any)._xcDispatched = true;
+					return await originalExec(message, args);
+				};
+
+				this.builtinMap.set(command.id.toLowerCase(), command);
+				this.builtinMap.set(command.name.toLowerCase(), command);
 				client.commands.message.set(command.id, command);
 
 				for (const alias of command.alias || []) {
+					this.builtinMap.set(alias.toLowerCase(), command);
 					if (!client.commands.message.has(alias)) {
 						client.commands.message.set(alias, command);
 					}
@@ -185,7 +204,8 @@ export class XernerxCommands extends BaseClient {
 			}
 		}
 
-		if (!client.events.has('XernerxMessageCreateEvent')) {
+		if (!this.listenerAttached) {
+			this.listenerAttached = true;
 			this.attachFallbackMessageListener(client);
 		}
 	}
@@ -204,10 +224,15 @@ export class XernerxCommands extends BaseClient {
 		client.events.set(fallbackEvent.id, fallbackEvent);
 
 		client.on('messageCreate', async (message: Message) => {
-			if (client.events.has('XernerxMessageCreateEvent')) return;
+			if ((message as any)._xcDispatched) return;
 			if (!message.content || message.author.bot || message.system) return;
 
-			const content = message.content.trim();
+			const rawContent = message.content.trim();
+			const botId = client.user?.id;
+			const mentionRegex = botId ? new RegExp(`^<@!?${botId}>\\s*`) : null;
+			const wasMentioned = mentionRegex ? mentionRegex.test(rawContent) : false;
+			const content = mentionRegex ? rawContent.replace(mentionRegex, '').trim() : rawContent;
+
 			const matchedPrefix = this.options.prefix.find((p) => content.toLowerCase().startsWith(p.toLowerCase()));
 			if (!matchedPrefix) return;
 
@@ -215,24 +240,28 @@ export class XernerxCommands extends BaseClient {
 			const [rawCmdName, ...args] = withoutPrefix ? withoutPrefix.split(/\s+/) : ['xc!'];
 			const cmdName = (rawCmdName || 'xc!').toLowerCase();
 
-			const command = client.commands.message.get(cmdName) || client.commands.message.find((cmd) => cmd.name.toLowerCase() === cmdName || cmd.alias?.some((a) => a.toLowerCase() === cmdName));
+			const command =
+				this.builtinMap.get(cmdName) ||
+				client.commands.message.get(cmdName) ||
+				client.commands.message.find((cmd) => cmd.name.toLowerCase() === cmdName || cmd.alias?.some((a) => a.toLowerCase() === cmdName));
 
 			if (!command) return;
 
-			if (!message.util) {
-				(message as any).util = {
-					message,
-					args,
-					parsed: {
-						command: command.name,
-						alias: cmdName,
-						mention: false,
-						prefix: matchedPrefix,
-					},
-					send: (opts: any) => (message.channel as any).send(opts),
-					reply: (opts: any) => message.reply(opts),
-				};
-			}
+			(message as any)._xcDispatched = true;
+
+			(message as any).util = {
+				...(message.util || {}),
+				message,
+				args,
+				parsed: {
+					command: command.name,
+					alias: cmdName,
+					mention: wasMentioned,
+					prefix: matchedPrefix,
+				},
+				send: message.util?.send ? message.util.send.bind(message.util) : (opts: any) => (message.channel as any).send(opts),
+				reply: message.util?.reply ? message.util.reply.bind(message.util) : (opts: any) => message.reply(opts),
+			};
 
 			if (!message.user) {
 				(message as any).user = message.author;

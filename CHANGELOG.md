@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.4
+
+### Patch Changes
+
+- Support leading bot mentions (`@Bot xc!`, `@Bot xc! <command>`) when `MessageContent` intent is disabled or when mentioning the bot, and ensure reliable command & alias dispatch alongside `@xernerx/framework`.
+
 ## 0.2.3
 
 ### Patch Changes

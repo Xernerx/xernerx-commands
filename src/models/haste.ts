@@ -9,6 +9,7 @@ export async function haste(code: string): Promise<string> {
 			const response = await fetch(`${url}/documents`, {
 				body: code,
 				method: 'POST',
+				signal: AbortSignal.timeout(3000),
 			});
 
 			if (!response.ok) continue;
