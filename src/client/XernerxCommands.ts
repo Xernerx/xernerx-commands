@@ -1,5 +1,6 @@
 /** @format */
 
+import { ExtensionBuilder } from '@xernerx/extension-builder';
 import { EventBuilder, MessageCommandBuilder, XernerxClient, XernerxShardClient } from '@xernerx/framework';
 import { Interaction, Message, Options as DiscordOptions } from 'discord.js';
 import { terminal } from '@xernerx/terminal';
@@ -175,24 +176,17 @@ const BUILTIN_COMMANDS: Array<new () => MessageCommandBuilder> = [
  * new Client();
  * ```
  */
-export class XernerxCommands extends BaseClient {
+export class XernerxCommands extends ExtensionBuilder<XernerxClient | XernerxShardClient, NormalizedXernerxCommandsOptions> {
 	/**
-	 * Unique extension identifier recognized by `@xernerx/framework`.
+	 * Bearer authentication token used for requests to the Xernerx Suite API.
 	 */
-	public readonly id = 'XernerxCommands';
+	public readonly token: string;
 
 	/**
-	 * Framework module filetype discriminator (`'XernerxExtension'`).
+	 * Resolved base URL (without trailing slash) for the Xernerx Suite API.
 	 */
-	public readonly filetype = 'XernerxExtension' as const;
+	public readonly url: string;
 
-	/**
-	 * Normalized configuration options for this extension instance.
-	 */
-	public readonly options: NormalizedXernerxCommandsOptions;
-
-	private _client!: XernerxClient | XernerxShardClient;
-	private initialized = false;
 	private listenerAttached = false;
 	private postedOnce = false;
 	private readonly builtinMap = new Map<string, MessageCommandBuilder>();
@@ -204,11 +198,8 @@ export class XernerxCommands extends BaseClient {
 	 * @param options - Configuration options for command registration and API synchronization.
 	 */
 	constructor(client: XernerxClient | XernerxShardClient, options: XernerxCommandsOptions = {}) {
-		super(options.token || '', { url: options.url, dev: options.dev });
-
 		const normalizedPrefix = options.prefix ? (Array.isArray(options.prefix) ? options.prefix : [options.prefix]) : ['xc!'];
-
-		this.options = {
+		const normalizedOptions: NormalizedXernerxCommandsOptions = {
 			token: options.token || '',
 			url: options.url,
 			dev: options.dev,
@@ -223,28 +214,14 @@ export class XernerxCommands extends BaseClient {
 			registerCommands: options.registerCommands ?? true,
 		};
 
+		super('XernerxCommands', normalizedOptions);
+
+		const base = new BaseClient(options.token || '', { url: options.url, dev: options.dev });
+		this.token = base.token;
+		this.url = base.url;
+
 		if (client) {
 			this.client = client;
-		}
-	}
-
-	/**
-	 * The attached `@xernerx/framework` client or shard client instance.
-	 */
-	public get client(): XernerxClient | XernerxShardClient {
-		return this._client;
-	}
-
-	/**
-	 * Sets the `@xernerx/framework` client or shard client instance and triggers initialization on first assignment.
-	 *
-	 * @param value - The client or shard client to attach.
-	 */
-	public set client(value: XernerxClient | XernerxShardClient) {
-		this._client = value;
-		if (value && !this.initialized) {
-			this.initialized = true;
-			void this.main(value);
 		}
 	}
 
@@ -255,7 +232,7 @@ export class XernerxCommands extends BaseClient {
 	 * @param client - The client instance to initialize against (defaults to {@link XernerxCommands.client | this.client}).
 	 * @returns A promise that resolves once setup has been scheduled.
 	 */
-	public async main(client: XernerxClient | XernerxShardClient = this._client) {
+	public override async main(client: XernerxClient | XernerxShardClient = this._client) {
 		if (!client) return;
 		this._client = client;
 

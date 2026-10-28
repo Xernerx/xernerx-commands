@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.6
+
+### Patch Changes
+
+- Extend `ExtensionBuilder` from `@xernerx/extension-builder@^0.1.0` in `XernerxCommands`.
+
 ## 0.2.5
 
 ### Patch Changes
