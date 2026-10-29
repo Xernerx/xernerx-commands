@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.7
+
+### Patch Changes
+
+- Added in-house pastebin url
+
 ## 0.2.6
 
 ### Patch Changes

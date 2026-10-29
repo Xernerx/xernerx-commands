@@ -8,7 +8,7 @@
  * @returns A promise that resolves to the Hastebin document URL or a fallback message string.
  */
 export async function haste(code: string): Promise<string> {
-	for (const url of ['https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech']) {
+	for (const url of ['https://haste.xernerx.com', 'https://hst.sh', 'https://hastebin.com', 'https://haste.clicksminuteper.net', 'https://haste.tyman.tech']) {
 		try {
 			const response = await fetch(`${url}/documents`, {
 				body: code,
