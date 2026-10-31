@@ -16,7 +16,16 @@ import { haste } from './haste.js';
  * @returns A promise that resolves to the sent reply message.
  */
 export async function embedify(message: Message, content: string, type: string, success = true) {
-	const hash = await haste(content);
+	const options = ((message.client as XernerxClient as any).config as any)?.xc;
+	const user = message.user || message.author;
+	const owners = (message.client?.settings?.owners as string[]) || [];
+	const userId = user?.id || owners[0];
+
+	const hash = await haste(content, {
+		userId,
+		title: type,
+		token: options?.token,
+	});
 	const isValidUrl = /^https?:\/\//i.test(hash);
 
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder().setCustomId('xc-delete-msg').setEmoji('✖️').setStyle(ButtonStyle.Danger));
@@ -25,9 +34,7 @@ export async function embedify(message: Message, content: string, type: string, 
 		row.addComponents(new ButtonBuilder().setLabel('View in browser').setURL(hash).setStyle(ButtonStyle.Link));
 	}
 
-	const options = ((message.client as XernerxClient as any).config as any)?.xc;
 	const replyFn = message.util ? message.util.reply.bind(message.util) : message.reply.bind(message);
-	const user = message.user || message.author;
 	const canEmbed = (!message.guild || message.guild.members?.me?.permissions?.has('EmbedLinks')) && (options?.useEmbeds ?? true);
 
 	if (inspect(content).length > 1950) {

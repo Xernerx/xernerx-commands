@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.8
+
+### Patch Changes
+
+- Pass `userId`, `title`, `language`, and optional `token` metadata from `embedify` and `reply` to `haste()` so `haste.xernerx.com` receives the required registered user ID and structured paste payload.
+
 ## 0.2.7
 
 ### Patch Changes

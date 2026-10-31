@@ -17,7 +17,17 @@ const t = terminal.child({ scope: 'XC' });
  */
 export async function reply(message: Message, msg: string, cb = true) {
 	try {
-		const url = await haste(msg);
+		const options = ((message.client as any)?.config as any)?.xc;
+		const user = message.user || message.author;
+		const owners = (message.client?.settings?.owners as string[]) || [];
+		const userId = user?.id || owners[0];
+
+		const url = await haste(msg, {
+			userId,
+			title: 'Evaluate',
+			language: cb ? 'ts' : 'txt',
+			token: options?.token,
+		});
 		const isValidUrl = /^https?:\/\//i.test(url);
 		const replyFn = message.util ? message.util.reply.bind(message.util) : message.reply.bind(message);
 

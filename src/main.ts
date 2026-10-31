@@ -23,7 +23,7 @@ import { SourceCommand } from './commands/source.js';
 import { SudoCommand } from './commands/sudo.js';
 import { TranspileCommand } from './commands/transpile.js';
 import { embedify } from './models/embedify.js';
-import { haste } from './models/haste.js';
+import { haste, HasteOptions } from './models/haste.js';
 import { reply } from './models/reply.js';
 import { shell } from './models/shell.js';
 import { source, resolveCommandSource } from './models/source.js';
@@ -67,4 +67,5 @@ export type {
 	CommandOptionBody,
 	CommandInput,
 	CommandsPayload,
+	HasteOptions,
 };
