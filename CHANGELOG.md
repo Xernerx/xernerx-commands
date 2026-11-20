@@ -2,6 +2,14 @@
 
 # @xernerx/commands
 
+## 0.2.9
+
+### Patch Changes
+
+- <!-- @format -->
+  
+  Update `packageManager` to `pnpm@12.21.0` and standardize `/** @format */` header placement in `src/main.ts`.
+
 ## 0.2.8
 
 ### Patch Changes
