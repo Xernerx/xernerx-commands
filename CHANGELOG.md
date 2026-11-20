@@ -2,6 +2,12 @@
 
 # @xernerx/commands
 
+## 0.2.11
+
+### Patch Changes
+
+- Link GitHub Packages (`npm.pkg.github.com`) publish step to canonical `${GITHUB_REPOSITORY}` with `GITHUB_TOKEN`.
+
 ## 0.2.10
 
 ### Patch Changes
